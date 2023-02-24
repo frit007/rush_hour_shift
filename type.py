@@ -18,15 +18,15 @@ class Owner(Enum):
 
 @dataclass(frozen=True, slots=True)
 class Road:
-    fromX: int
-    toX: int
-    fromY: int
-    toY: int
+    from_x: int
+    to_x: int
+    from_y: int
+    to_y: int
 
 @dataclass(frozen=True, slots=True)
 class Car:
     image: pygame.Surface
-    carLength: int
+    car_length: int
     direction: Direction
     owner: Owner
 
@@ -35,7 +35,7 @@ class Car:
 @dataclass(frozen=True, slots=True)
 class Card:
     moves: int # how many car moves they can make
-    isSlideX: bool # slider allows them to move 1 car as far as they want to
+    is_slide_x: bool # slider allows them to move 1 car as far as they want to
     moveRoads: int # how many roads they can move
 
 ### Action ###
@@ -43,13 +43,13 @@ class Card:
 @dataclass(frozen=True, slots=True)
 class Move:
     car: Car
-    xDelta:int 
-    yDelta:int
+    x_delta:int 
+    y_delta:int
 
 @dataclass(frozen=True, slots=True)
 class Shift:
     road: Road
-    yDelta: int
+    y_delta: int
 
 @dataclass(frozen=True, slots=True)
 class Action:

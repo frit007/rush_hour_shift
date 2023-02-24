@@ -2,9 +2,9 @@ from type import *
 
 class RoadState:
     road: Road
-    yOffset: int
-    def __init__(self, yOffset:int, road:Road) -> None:
-        self.yOffset = yOffset
+    y_offset: int
+    def __init__(self, y_offset:int, road:Road) -> None:
+        self.y_offset = y_offset
         self.road = road
 
 class CarState:
@@ -46,10 +46,10 @@ class State:
         # Maybe move somewhere else
         pass
 
-    def getLegalActions(self) -> list[Action]:
+    def get_legal_actions(self) -> list[Action]:
         pass
 
-    def newGame(self):
+    def new_game(self):
         # Maybe move to constructor
         self.roads = [
             RoadState(0, Road(0,4,0,5)),
@@ -57,14 +57,14 @@ class State:
             RoadState(0, Road(5,8,0,5)),
         ]
         
-        self.cars = self.__placeCars()
+        self.cars = self.__place_cars()
         self.cards = [5,5,5,5,5]
         self.turn = Owner.PLAYER1
 
-    def isBlocked(self, x:int, y:int):
+    def is_blocked(self, x:int, y:int):
         pass
 
-    def __placeCars() -> list[CarState]:
+    def __place_cars() -> list[CarState]:
         # We can take game setups from here
         # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
         # | | | | |X[ | | | ] |X| | | |

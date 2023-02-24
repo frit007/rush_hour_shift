@@ -13,9 +13,7 @@ cards = [
     Card(2, False, 1)
 ]
 
-# Do some kind of search to find the next move. Maybe A-star
-def findNextMove(state):
-    pass
+
     
 # Optimizing for minimal state size(We are going to have a lot of states, this is probably required if we do A* or similar)
 # 
@@ -65,10 +63,10 @@ def findNextMove(state):
 # using RGB color coding.
 background_colour = (234, 212, 252)
 
-tileSize = 50
+tile_size = 50
 
 image = pygame.image.load(os.path.join("data/images", "Ambulance.png"))
-image = pygame.transform.scale(image, (tileSize,tileSize * 2))
+image = pygame.transform.scale(image, (tile_size, tile_size * 2))
 
 # Define the dimensions of
 # screen object(width,height)
