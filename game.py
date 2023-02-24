@@ -4,7 +4,6 @@ import os
 from enum import Enum
 from dataclasses import dataclass
 
-
 # # Car positions indicate the head of the car, the other positions are implicitly stored. 
 class Direction(Enum):
     # A VERTICAL car with head at position (0,0) and length 2 has the positions [(0,0), (0,-1)]
