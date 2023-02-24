@@ -1,70 +1,8 @@
 # import the pygame module
 import pygame
 import os
-from enum import Enum
-from dataclasses import dataclass
-
-# # Car positions indicate the head of the car, the other positions are implicitly stored. 
-class Direction(Enum):
-    # A VERTICAL car with head at position (0,0) and length 2 has the positions [(0,0), (0,-1)]
-    VERTICAL = 1
-    # A Horizontal car with head at position (0,0) and length 2 has positions [(0,0), (1,0)]
-    HORIZONTAL = 2
-
-class Owner(Enum):
-    PLAYER1 = 1
-    PLAYER2 = 2
-    NEUTRAL = 3
-
-@dataclass(frozen=True, slots=True)
-class Road:
-    fromX: int
-    toX: int
-    fromY: int
-    toY: int
-
-class RoadState:
-    road: Road
-    yOffset: int
-    def __init__(self, yOffset:int, road:Road) -> None:
-        self.yOffset = yOffset
-        self.road = road
-
-@dataclass(frozen=True, slots=True)
-class Car:
-    image: pygame.Surface
-    carLength: int
-    direction: Direction
-    owner: Owner
-
-class CarState:
-    x: int
-    y: int
-    car: Car
-    def __init__(self, x:int, y:int, car: Car) -> None:
-        self.x = x
-        self.y = y
-        self.car = car
-
-class Player:
-    def play(self, state):
-        pass
-
-class HumanPlayer(Player):
-    def play(self, state):
-        # Get user input, if you are feeling fancy by letting the user click on the screen.
-        pass
-
-class AIPlayer(Player):
-    def play(self, state):
-        # Do something awesome
-        pass
-
-@dataclass(frozen=True, slots=True)
-class Card:
-    moves: int # how many car moves they can make
-    isSlideX: bool # slider allows them to move 1 car as far as they want to
-    moveRoads: int # how many roads they can move
+from type import *
+from loader import load_map
 
 # Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
 cards = [
@@ -75,90 +13,10 @@ cards = [
     Card(2, False, 1)
 ]
 
-@dataclass(frozen=True, slots=True)
-class Move:
-    car: Car
-    xDelta:int 
-    yDelta:int
-
-@dataclass(frozen=True, slots=True)
-class Shift:
-    road: Road
-    yDelta: int
-
-@dataclass(frozen=True, slots=True)
-class Action:
-    shift: Shift
-    moves: list[Car]
-
-class State:
-    roads: list[RoadState]
-    cars: list[CarState]
-    turn: Owner
-    # Don't store the actual cards, instead store how many of each card is still available in the deck
-    # the index in the array corresponds to 
-    cards: list[int]
-    def __init__(self) -> None:
-        pass
-
-    def copy(self, existingState):
-        # create a somewhat shallow copy of the state, Cars and roads should not be recreated but RoadState and CarState might have to be recreated.
-        # Otherwise reference existing RoadState and CarState unless they have changed in someway(This is probably too annoying to deal with)
-        pass
-
-    def play(self):
-        if self.turn == Owner.PLAYER1:
-            # avoid storing players as part of the state, players could be stored in an external array
-            pass
-        else:
-            pass
-
-    def draw(self):
-        # go through roads and draw them
-        # go through cars and draw them
-        # Maybe move somewhere else
-        pass
-
-    def getLegalActions(self) -> list[Action]:
-        pass
-
-    def newGame(self):
-        # Maybe move to constructor
-        self.roads = [
-            RoadState(0, Road(0,4,0,5)),
-            RoadState(0, Road(5,8,0,5)),
-            RoadState(0, Road(5,8,0,5)),
-        ]
-        
-        self.cars = self.__placeCars()
-        self.cards = [5,5,5,5,5]
-        self.turn = Owner.PLAYER1
-
-    def isBlocked(self, x:int, y:int):
-        pass
-
-    def __placeCars() -> list[CarState]:
-        # We can take game setups from here
-        # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
-        # | | | | |X[ | | | ] |X| | | |
-        # |P|P| | |X[X| | | ] |X|O|O|O|
-        # | | | | | [X|X|X| ] |X| | | |
-        # | | | |X| [ |X|X|X] | | | | |
-        # |O|O|O|X| [ | | |X]X| | |P|P|
-        # | | | |X| [ | | | ]X| | | | |
-        pass
-
-    def heuristic():
-        # Calculate a heuristic for this field, this could include
-        # - distance of to the goal
-        # - cars blocking the cars
-        pass
-
 # Do some kind of search to find the next move. Maybe A-star
 def findNextMove(state):
     pass
     
-
 # Optimizing for minimal state size(We are going to have a lot of states, this is probably required if we do A* or similar)
 # 
 # # Attributes store everything that doesn't change between states
@@ -209,7 +67,7 @@ background_colour = (234, 212, 252)
 
 tileSize = 50
 
-image = pygame.image.load(os.path.join("images", "Ambulance.png"))
+image = pygame.image.load(os.path.join("data/images", "Ambulance.png"))
 image = pygame.transform.scale(image, (tileSize,tileSize * 2))
 
 # Define the dimensions of
