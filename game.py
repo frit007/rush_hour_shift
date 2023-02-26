@@ -1,8 +1,7 @@
-# import the pygame module
 import pygame
-import os
+
 from type import *
-from loader import load_map
+from loader import load_maps
 
 # Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
 cards = [
@@ -12,8 +11,6 @@ cards = [
     Card(0, True, 0),
     Card(2, False, 1)
 ]
-
-
     
 # Optimizing for minimal state size(We are going to have a lot of states, this is probably required if we do A* or similar)
 # 
@@ -58,38 +55,46 @@ cards = [
 #   "turn": PLAYER1/PLAYER2
 # }
 
-        
-# Define the background colour
-# using RGB color coding.
+maps = load_maps()
 background_colour = (234, 212, 252)
-
 tile_size = 50
 
-image = pygame.image.load(os.path.join("data/images", "Ambulance.png"))
-image = pygame.transform.scale(image, (tile_size, tile_size * 2))
+pygame.init()
 
-# Define the dimensions of
-# screen object(width,height)
-screen = pygame.display.set_mode((600, 600))
-#screen = pygame.display.set_mode((350, 250), pygame.RESIZABLE)
+screen = pygame.display.set_mode((600, 600)) # pygame.RESIZABLE (resolution switch?)
 
-# Set the caption of the screen
-pygame.display.set_caption('Rush hour shift')
+pygame.display.set_caption('Rush Hour Shift')
   
-# Fill the background colour to the screen
 screen.fill(background_colour)
 
-screen.blit(image, (0,0))
-# Update the display using flip
 pygame.display.flip()
   
-# Variable to keep our game loop running
 running = True
+new_game = True
+restart = False
+current_state = maps[0]
   
 # game loop
 while running:
-    # for loop through the event queue  
     for event in pygame.event.get():
-        # Check for QUIT event      
         if event.type == pygame.QUIT:
             running = False
+
+        # replace with actual restart condition
+        if (event.type == pygame.KEYDOWN 
+            and event.key == pygame.K_ESCAPE):
+            restart = True
+
+    if restart:
+        match input("Do you want to play again? (Y/n) "):
+            case 'Y' | 'y':
+                new_game = True
+            case 'N' | 'n':
+                pygame.quit()
+                running = False
+
+    if new_game:
+        map_num = input(f"Select a map (1 - {len(maps)}): ")
+        current_state = maps[int(map_num) - 1]
+        new_game = False
+        restart = False
