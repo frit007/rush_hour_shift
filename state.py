@@ -113,6 +113,16 @@ class State:
     def get_legal_actions(self) -> list[Action]:
         pass
 
+    # slight rule change, 
+    # the player when they reach the end of the board, 
+    # not when they have driven over the edge
+    def get_winner(self):
+        for car_state in self.cars:
+            if car_state.car.owner == Owner.PLAYER1 and car_state.x == 12:
+                return Owner.PLAYER1
+            if car_state.car.owner == Owner.PLAYER2 and car_state.x == 0:
+                return Owner.PLAYER2
+        return None
     def new_game(self):
         # Maybe move to constructor
         self.roads = [
@@ -234,6 +244,7 @@ class State:
         
 
     def heuristic():
+        # Heuristic should probably be moved to ai player, since each AI is free to choose their own heuristic
         # Calculate a heuristic for this field, this could include
         # - distance of to the goal
         # - cars blocking the cars
@@ -241,11 +252,7 @@ class State:
 
 # Note: this is not declared as a member functions, due to typing limitations
 def copyState(state:State) -> State:
-    new_state = State()
-    new_state.roads = copy.copy(state.roads)
-    new_state.cars = copy.copy(state.cars)
-    new_state.cards = copy.copy(state.cards)
-    new_state.turn = state.turn
+    new_state = State(copy.copy(state.roads), copy.copy(state.cars), copy.copy(state.cards), state.turn)
     # create a somewhat shallow copy of the state, Cars and roads should not be recreated but RoadState and CarState might have to be recreated.
     # Otherwise reference existing RoadState and CarState unless they have changed in someway(This might be too annoying to deal with)
     return new_state

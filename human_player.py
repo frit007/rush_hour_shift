@@ -48,6 +48,8 @@ class HumanPlayer(Player):
 
         pygame.display.flip()
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 for element in get_overlapping_elements(mouse_x, mouse_y, self.current_state):
@@ -99,6 +101,9 @@ class HumanPlayer(Player):
 
         pygame.display.flip()
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.current_shift != None:
                     self.action = Action(self.current_shift, [])
@@ -112,6 +117,9 @@ class HumanPlayer(Player):
         draw_state(self.current_state)
         pygame.display.flip()
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 for element in get_overlapping_elements(mouse_x, mouse_y, self.current_state):

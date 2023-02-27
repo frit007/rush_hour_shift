@@ -13,13 +13,6 @@ background_colour = (234, 212, 252)
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
 
-# Define the dimensions of
-# screen object(width,height)
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-#screen = pygame.display.set_mode((350, 250), pygame.RESIZABLE)
-
-# Set the caption of the screen
-pygame.display.set_caption('Rush hour shift')
 
 tile_size = 30
 
@@ -28,9 +21,17 @@ tile_image = pygame.transform.scale(tile_image, (tile_size, tile_size))
 
 road_frame_image = pygame.image.load(os.path.join("data/images", "RoadFrame.png"))
 
-screen.fill(background_colour)
+screen = None
 
-centering_offset = (5, 5)
+def create_window():
+    global screen
+    pygame.init()
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # pygame.RESIZABLE (resolution switch?)
+
+    pygame.display.set_caption('Rush Hour Shift')
+    
+    screen.fill(background_colour)
+
 
 def draw_car(car_state: CarState, draw_offset:tuple[int,int]):
     screen.blit(car_state.car.image, screen_coord(car_state.x, car_state.y, draw_offset))
