@@ -1,8 +1,10 @@
 # import the pygame module
+from human-player import HumanPlayer
 import pygame
 import os
 from type import *
 from loader import load_map
+from ui import *
 
 # Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
 cards = [
@@ -14,7 +16,6 @@ cards = [
 ]
 
 
-    
 # Optimizing for minimal state size(We are going to have a lot of states, this is probably required if we do A* or similar)
 # 
 # # Attributes store everything that doesn't change between states
@@ -59,37 +60,6 @@ cards = [
 # }
 
         
-# Define the background colour
-# using RGB color coding.
-background_colour = (234, 212, 252)
 
-tile_size = 50
 
-image = pygame.image.load(os.path.join("data/images", "Ambulance.png"))
-image = pygame.transform.scale(image, (tile_size, tile_size * 2))
 
-# Define the dimensions of
-# screen object(width,height)
-screen = pygame.display.set_mode((600, 600))
-#screen = pygame.display.set_mode((350, 250), pygame.RESIZABLE)
-
-# Set the caption of the screen
-pygame.display.set_caption('Rush hour shift')
-  
-# Fill the background colour to the screen
-screen.fill(background_colour)
-
-screen.blit(image, (0,0))
-# Update the display using flip
-pygame.display.flip()
-  
-# Variable to keep our game loop running
-running = True
-  
-# game loop
-while running:
-    # for loop through the event queue  
-    for event in pygame.event.get():
-        # Check for QUIT event      
-        if event.type == pygame.QUIT:
-            running = False

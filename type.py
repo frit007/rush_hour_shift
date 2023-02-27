@@ -1,6 +1,6 @@
 import pygame
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # # Car positions indicate the head of the car, the other positions are implicitly stored. 
 class Direction(Enum):
@@ -25,7 +25,8 @@ class Road:
 
 @dataclass(frozen=True, slots=True)
 class Car:
-    image: pygame.Surface
+    id: int
+    image: pygame.Surface = field(repr=False)
     car_length: int
     direction: Direction
     owner: Owner
@@ -45,6 +46,8 @@ class Move:
     car: Car
     x_delta:int 
     y_delta:int
+    def magnitude(self):
+        return abs(self.x_delta) + abs(self.y_delta)
 
 @dataclass(frozen=True, slots=True)
 class Shift:
