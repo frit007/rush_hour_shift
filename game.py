@@ -1,11 +1,24 @@
+import os
+
+from human_player import HumanPlayer
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
-from human-player import HumanPlayer
+from tkinter import *
+from tkinter import ttk
 
 from type import *
+from state import *
+from player import *
 from loader import load_maps
 from ui import *
 
-# Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
+SCREEN_SIZE = (600, 600)
+TILE_SIZE = 50 #TODO:
+NAME = 'Rush Hour Shift'
+BG_COLOR = '#87CEEB'
+FONT = 'Roboto'
+
+#TODO: Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
 cards = [
     Card(4, False, 0),
     Card(3, False, 0),
@@ -13,7 +26,85 @@ cards = [
     Card(0, True, 0),
     Card(2, False, 1)
 ]
+
+def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
+    root.withdraw()
+    create_window()
+
+    running = True
+    # game loop
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            if (event.type == pygame.KEYDOWN 
+                and event.key == pygame.K_ESCAPE):
+                running = False
     
+    pygame.display.quit()
+    root.deiconify()
+
+def init_main_screen(root):
+    map_options, maps = map(list, zip(*load_maps()))
+    players = [AIPlayer(), HumanPlayer()] # TODO:
+    player_options = ['AI', 'Human']
+
+    root.title(NAME)
+    root.geometry(f'{SCREEN_SIZE[0]}x{SCREEN_SIZE[1]}')
+    root.resizable(False, False)
+
+    style = ttk.Style()
+    style.theme_use('clam')
+    style.configure('TFrame', background=BG_COLOR)
+    style.configure('TLabel', background=BG_COLOR, foreground='white')
+
+    content = ttk.Frame(root)
+    frame = ttk.Frame(content, padding=10, width=SCREEN_SIZE[0], height=SCREEN_SIZE[1])
+    title = ttk.Label(content, text=NAME, font=(FONT + ' Bold', 30))
+
+    map_text = ttk.Label(content, text='Pick a map:', font=(FONT, 20))
+    map_drop = ttk.Combobox(content, values=map_options)
+    map_drop.current(0)
+
+    player_text = ttk.Label(content, text='Select Players:', font=(FONT, 20))
+    player1_text = ttk.Label(content, text='Player 1:', font=(FONT, 20))
+    player1_drop = ttk.Combobox(content, values=player_options)
+    player1_drop.current(0)
+
+    player2_text = ttk.Label(content, text='Player 2:', font=(FONT, 20))
+    player2_drop = ttk.Combobox(content, values=player_options)
+    player2_drop.current(0)
+
+    start_btn = ttk.Button(content, text='Start', command=lambda: new_game(root, 
+                                                                           maps[map_drop.current()], 
+                                                                           players[player1_drop.current()], 
+                                                                           players[player2_drop.current()]))
+    quit_btn = ttk.Button(content, text='Quit', command=root.destroy)
+
+    content.grid(column=0, row=0)
+    frame.grid(column=0, row=0, columnspan=8, rowspan=16)
+    title.grid(column=0, row=0, columnspan=8, rowspan=6)
+    map_text.grid(column=2, row=6, columnspan=2)
+    map_drop.grid(column=4, row=6, columnspan=2)
+    player_text.grid(column=0, row=8, columnspan=8)
+    player1_text.grid(column=1, row=9, columnspan=2)
+    player2_text.grid(column=5, row=9, columnspan=2)
+    player1_drop.grid(column=1, row=10, columnspan=2)
+    player2_drop.grid(column=5, row=10, columnspan=2)
+    quit_btn.grid(column=2, row=13, columnspan=2)
+    start_btn.grid(column=4, row=13, columnspan=2)
+
+def main():
+    pygame.init()
+    root = Tk()
+    init_main_screen(root)
+    root.mainloop()
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
+
 # Optimizing for minimal state size(We are going to have a lot of states, this is probably required if we do A* or similar)
 # 
 # # Attributes store everything that doesn't change between states
@@ -56,47 +147,3 @@ cards = [
 #   "roads": List<road>
 #   "turn": PLAYER1/PLAYER2
 # }
-
-maps = load_maps()
-background_colour = (234, 212, 252)
-tile_size = 50
-
-pygame.init()
-
-screen = pygame.display.set_mode((600, 600)) # pygame.RESIZABLE (resolution switch?)
-
-pygame.display.set_caption('Rush Hour Shift')
-  
-screen.fill(background_colour)
-
-pygame.display.flip()
-  
-running = True
-new_game = True
-restart = False
-current_state = maps[0]
-  
-# game loop
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        # replace with actual restart condition
-        if (event.type == pygame.KEYDOWN 
-            and event.key == pygame.K_ESCAPE):
-            restart = True
-
-    if restart:
-        match input("Do you want to play again? (Y/n) "):
-            case 'Y' | 'y':
-                new_game = True
-            case 'N' | 'n':
-                pygame.quit()
-                running = False
-
-    if new_game:
-        map_num = input(f"Select a map (1 - {len(maps)}): ")
-        current_state = maps[int(map_num) - 1]
-        new_game = False
-        restart = False

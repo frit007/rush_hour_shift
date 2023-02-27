@@ -1,4 +1,5 @@
 import os
+import string
 import random
 import pygame
 
@@ -102,17 +103,19 @@ def read_map(lines : list[str]) -> State:
 
     return map
 
+def parse_number(name: str):
+    digits = ''.join(ch for ch in name if ch in string.digits)
+    return int(digits)
 
 def load_maps() -> list[State]:
     map_dir = os.path.join(dir, 'data/maps')
-    map_files = sorted(os.listdir(map_dir), 
-                       key = lambda name: int(name.replace('.map', '')))
+    map_files = sorted(os.listdir(map_dir), key = parse_number)
     maps = []
 
     for file in map_files:
         with open(os.path.join(map_dir, file), 'r', encoding='utf-8') as f:
             lines = f.readlines()
         map = read_map(lines)
-        maps.append(map)
+        maps.append((file.replace('.map', ''), map))
 
     return maps
