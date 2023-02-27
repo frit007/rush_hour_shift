@@ -8,16 +8,18 @@ import os
 
 # Define the background colour
 # using RGB color coding.
-background_colour = (234, 212, 252)
+MAIN_BG_COLOR = '#87CEEB'
+GAME_BG_COLOR = (197, 224, 219)
 
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
 
 
-tile_size = 30
+TILE_SIZE = 30
+NAME = 'Rush Hour Shift'
 
 tile_image = pygame.image.load(os.path.join("data/images", "Tile.png"))
-tile_image = pygame.transform.scale(tile_image, (tile_size, tile_size))
+tile_image = pygame.transform.scale(tile_image, (TILE_SIZE, TILE_SIZE))
 
 road_frame_image = pygame.image.load(os.path.join("data/images", "RoadFrame.png"))
 
@@ -28,9 +30,9 @@ def create_window():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # pygame.RESIZABLE (resolution switch?)
 
-    pygame.display.set_caption('Rush Hour Shift')
+    pygame.display.set_caption(NAME)
     
-    screen.fill(background_colour)
+    screen.fill(GAME_BG_COLOR)
 
 
 def draw_car(car_state: CarState, draw_offset:tuple[int,int]):
@@ -43,7 +45,7 @@ def draw_cars(car_states: list[CarState], draw_offset:tuple[int,int]):
 def calculate_draw_offset(roads: list[RoadState]):
     # height = roads[0].road.to_y
 
-    vertical_tiles = SCREEN_HEIGHT/tile_size
+    vertical_tiles = SCREEN_HEIGHT/TILE_SIZE
 
     prefered_y = vertical_tiles / 2
 
@@ -65,12 +67,12 @@ def calculate_draw_offset(roads: list[RoadState]):
 
 def screen_coord(x:int, y:int, draw_offset:tuple[int,int]):
     return (
-                tile_size * (x + draw_offset[0]),
-                tile_size * (y + draw_offset[1]),
+                TILE_SIZE * (x + draw_offset[0]),
+                TILE_SIZE * (y + draw_offset[1]),
             )
 
 def draw_road(road: Road, draw_offset: tuple[int,int]):
-    scaled_road_frame_image = pygame.transform.scale(road_frame_image, ((road.to_x-road.from_x + 1) * tile_size, tile_size))
+    scaled_road_frame_image = pygame.transform.scale(road_frame_image, ((road.to_x-road.from_x + 1) * TILE_SIZE, TILE_SIZE))
     for x in range(road.from_x, road.to_x + 1):
         for y in range(road.from_y, road.to_y + 1):
             screen.blit(tile_image, screen_coord(x, y, draw_offset))
@@ -82,17 +84,23 @@ def draw_roads(roads: list[RoadState], draw_offset: tuple[int,int]):
         draw_road(road.road, (draw_offset[0], draw_offset[1] + road.y_offset))
 
 def draw_state(state: State):
-    screen.fill(background_colour)
+    screen.fill(GAME_BG_COLOR)
     draw_offset = calculate_draw_offset(state.roads)
     draw_roads(state.roads, draw_offset)
     draw_cars(state.cars, draw_offset)
+    highlight_turn_car(state, draw_offset)
     return draw_offset
+
+def highlight_turn_car(state: State, draw_offset: tuple[int, int]):
+    for car in state.cars:
+        if car.car.owner == state.turn:
+            paint_highlight((car.x, car.y), (2, 1), pygame.Color(50, 168, 82, 255), draw_offset)
 
 def paint_highlight(position:tuple[int,int], size: tuple[int,int], color: pygame.Color, draw_offset:tuple[int,int]):
     top_left_corner = screen_coord(position[0], position[1], draw_offset)
-    top_right_corner = (top_left_corner[0] + size[0] * tile_size, top_left_corner[1])
-    bottom_right_corner = (top_left_corner[0] + size[0] * tile_size, top_left_corner[1] + size[1] * tile_size)
-    bottom_left_corner = (top_left_corner[0], top_left_corner[1] + size[1] * tile_size)
+    top_right_corner = (top_left_corner[0] + size[0] * TILE_SIZE, top_left_corner[1])
+    bottom_right_corner = (top_left_corner[0] + size[0] * TILE_SIZE, top_left_corner[1] + size[1] * TILE_SIZE)
+    bottom_left_corner = (top_left_corner[0], top_left_corner[1] + size[1] * TILE_SIZE)
     pygame.draw.lines(screen, color, True, [top_left_corner, top_right_corner, bottom_right_corner, bottom_left_corner], 3)
 
 def paint_highlight_rect(rect: pygame.Rect, color: pygame.Color):
@@ -110,7 +118,7 @@ def car_rect(car: CarState, draw_offset: tuple[int,int]):
 
 def field_rect(x: int,y: int, draw_offset: tuple[int,int], size: tuple[int,int]=(1,1)):
     top_left = screen_coord(x, y, draw_offset)
-    return pygame.Rect(top_left[0],top_left[1], size[0] * tile_size, size[1] * tile_size)
+    return pygame.Rect(top_left[0],top_left[1], size[0] * TILE_SIZE, size[1] * TILE_SIZE)
 
 def road_borders(road: RoadState, draw_offset: tuple[int,int]):
     return [
@@ -129,7 +137,7 @@ def get_overlapping_elements(x: int, y: int, state: State) -> list[OverlappingEl
     overlaps = []
     draw_offset = calculate_draw_offset(state.roads)
     
-    grid_pos = (math.floor((x) / tile_size) - draw_offset[0], math.floor((y) / tile_size) - draw_offset[1])
+    grid_pos = (math.floor((x) / TILE_SIZE) - draw_offset[0], math.floor((y) / TILE_SIZE) - draw_offset[1])
 
     for car in state.cars:
         image_rect = car_rect(car, draw_offset)
@@ -179,7 +187,7 @@ def translate_shifts_to_rects(road_state: RoadState, rect:pygame.Rect, shifts: l
                 shift,
                 rect.move(
                     0,
-                    shift.y_delta * tile_size
+                    shift.y_delta * TILE_SIZE
                 )
             )
         )

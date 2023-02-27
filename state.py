@@ -47,7 +47,7 @@ class State:
     # Don't store the actual cards, instead store how many of each card is still available in the deck
     # the index in the array corresponds to 
     cards: list[int]
-    def __init__(self, roads, cars, turn, cards) -> None:
+    def __init__(self, roads: list[RoadState], cars: list[RoadState], turn: Owner, cards: list[int]) -> None:
         self.roads = roads
         self.cars = cars
         self.turn = turn
@@ -211,18 +211,17 @@ class State:
                 return car_state
 
     # doesn't yet account for actions that will be allowed by moving another car
-    def car_moves(self, car_state: CarState, move_limit:int):
+    def car_moves(self, car_state: CarState, move_limit:int) -> list[Move]:
         delta = (1,0) if car_state.car.direction == Direction.HORIZONTAL else (0,1)
 
-        actions = []
-        # print((car_state.x, car_state.y))
+        moves = []
 
         for i in range(1, move_limit + 1):
             if not self.car_is_blocked(
                 delta[0] * i + car_state.x,
                 delta[1] * i + car_state.y,
                 car_state.car):
-                actions.append(Move(car_state.car, delta[0] * i, delta[1] * i))
+                moves.append(Move(car_state.car, delta[0] * i, delta[1] * i))
             else:
                 break
         for i in range(-1, -move_limit -1, -1):
@@ -230,11 +229,11 @@ class State:
                 delta[0] * i + car_state.x, 
                 delta[1] * i + car_state.y, 
                 car_state.car):
-                actions.append(Move(car_state.car, delta[0] * i, delta[1] * i))
+                moves.append(Move(car_state.car, delta[0] * i, delta[1] * i))
             else:
                 break
 
-        return actions
+        return moves
                 
 
 
@@ -252,7 +251,7 @@ class State:
 
 # Note: this is not declared as a member functions, due to typing limitations
 def copyState(state:State) -> State:
-    new_state = State(copy.copy(state.roads), copy.copy(state.cars), copy.copy(state.cards), state.turn)
+    new_state = State(copy.copy(state.roads), copy.copy(state.cars), state.turn, copy.copy(state.cards))
     # create a somewhat shallow copy of the state, Cars and roads should not be recreated but RoadState and CarState might have to be recreated.
     # Otherwise reference existing RoadState and CarState unless they have changed in someway(This might be too annoying to deal with)
     return new_state

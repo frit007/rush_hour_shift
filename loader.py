@@ -5,8 +5,8 @@ import pygame
 
 from state import *
 from type import *
+from ui import TILE_SIZE
 
-TILE_SIZE = 50
 dir = os.path.split(os.path.realpath(__file__))[0]
 
 ## Images ##
@@ -60,7 +60,7 @@ def followTrail(lines : list[str], i : int, x : int, y : int,
 
 def read_map(lines : list[str]) -> State:
     map = State([], [], Owner.PLAYER1, [])
-
+    car_id = 0
     for i in range(len(lines)):
         lines[i] = list(lines[i].replace("\n",""))
 
@@ -74,11 +74,12 @@ def read_map(lines : list[str]) -> State:
 
                 if marker in horizontal_markers:
                         length = x1 - x0 + 1
-
+                        rotation = 90
                         match marker:
                             case '1':
                                 image = player1
                                 owner = Owner.PLAYER1
+                                rotation = 270
                             case '2':
                                 image = player2
                                 owner = Owner.PLAYER2
@@ -86,14 +87,15 @@ def read_map(lines : list[str]) -> State:
                                 image = random.choice(car_images[length])
                                 owner = Owner.NEUTRAL
 
-                        car = Car(image, length, Direction.HORIZONTAL, owner)
+                        car = Car(car_id, pygame.transform.rotate(image, rotation), length, Direction.HORIZONTAL, owner)
                         
                 elif marker in vertical_markers:
                     length = y1 - y0 + 1
                     image = random.choice(car_images[length])
-                    car = Car(image, length, Direction.VERTICAL, Owner.NEUTRAL)
+                    car = Car(car_id, image, length, Direction.VERTICAL, Owner.NEUTRAL)
 
                 map.cars.append(CarState(x0, y0, car))
+                car_id = car_id + 1
 
             if divider in road_divider:
                 (x0, y0), (x1, y1) = followTrail(lines, i, x, y, divider)
@@ -101,6 +103,12 @@ def read_map(lines : list[str]) -> State:
 
             x += 1
 
+    # FIXME: otherwise it only contains one road
+    map.roads = [
+            RoadState(0, Road(0, 4, 0, 5)),
+            RoadState(0, Road(5, 8, 0, 5)),
+            RoadState(0, Road(9, 13, 0, 5)),
+        ]
     return map
 
 def parse_number(name: str):

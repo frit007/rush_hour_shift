@@ -13,9 +13,6 @@ from loader import load_maps
 from ui import *
 
 SCREEN_SIZE = (600, 600)
-TILE_SIZE = 50 #TODO:
-NAME = 'Rush Hour Shift'
-BG_COLOR = '#87CEEB'
 FONT = 'Roboto'
 
 #TODO: Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
@@ -30,17 +27,31 @@ cards = [
 def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
     root.withdraw()
     create_window()
+    players = [player1, player2]
+    turn = 0
 
-    running = True
-    # game loop
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+    current_state = initial_state
 
-            if (event.type == pygame.KEYDOWN 
-                and event.key == pygame.K_ESCAPE):
-                running = False
+    while current_state.get_winner() == None:
+        action = players[turn].play(current_state)
+        current_state = current_state.apply_action(action)
+        current_state.switch_turn()
+        turn = (turn + 1) % 2
+    
+    if(current_state.get_winner() == Owner.PLAYER1):
+        print("Player 1 won")
+    else:
+        print("Player 2 won")
+    # running = True
+    # # game loop
+    # while running:
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             running = False
+
+    #         if (event.type == pygame.KEYDOWN 
+    #             and event.key == pygame.K_ESCAPE):
+    #             running = False
     
     pygame.display.quit()
     root.deiconify()
@@ -56,8 +67,8 @@ def init_main_screen(root):
 
     style = ttk.Style()
     style.theme_use('clam')
-    style.configure('TFrame', background=BG_COLOR)
-    style.configure('TLabel', background=BG_COLOR, foreground='white')
+    style.configure('TFrame', background=MAIN_BG_COLOR)
+    style.configure('TLabel', background=MAIN_BG_COLOR, foreground='white')
 
     content = ttk.Frame(root)
     frame = ttk.Frame(content, padding=10, width=SCREEN_SIZE[0], height=SCREEN_SIZE[1])

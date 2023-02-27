@@ -75,7 +75,7 @@ class HumanPlayer(Player):
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
         
-        mouse_shift = -math.floor((self.selected_road.rect.top - mouse_y) / tile_size) - 1
+        mouse_shift = -math.floor((self.selected_road.rect.top - mouse_y) / TILE_SIZE) - 1
         existing_shift = self.action.shift.y_delta if self.action.shift != None else 0
 
         new_shift = Shift(self.selected_road.target.road, mouse_shift + existing_shift)
