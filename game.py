@@ -1,9 +1,8 @@
-# import the pygame module
-from human-player import HumanPlayer
 import pygame
-import os
+from human-player import HumanPlayer
+
 from type import *
-from loader import load_map
+from loader import load_maps
 from ui import *
 
 # Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
@@ -14,8 +13,7 @@ cards = [
     Card(0, True, 0),
     Card(2, False, 1)
 ]
-
-
+    
 # Optimizing for minimal state size(We are going to have a lot of states, this is probably required if we do A* or similar)
 # 
 # # Attributes store everything that doesn't change between states
@@ -59,7 +57,46 @@ cards = [
 #   "turn": PLAYER1/PLAYER2
 # }
 
-        
+maps = load_maps()
+background_colour = (234, 212, 252)
+tile_size = 50
 
+pygame.init()
 
+screen = pygame.display.set_mode((600, 600)) # pygame.RESIZABLE (resolution switch?)
 
+pygame.display.set_caption('Rush Hour Shift')
+  
+screen.fill(background_colour)
+
+pygame.display.flip()
+  
+running = True
+new_game = True
+restart = False
+current_state = maps[0]
+  
+# game loop
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        # replace with actual restart condition
+        if (event.type == pygame.KEYDOWN 
+            and event.key == pygame.K_ESCAPE):
+            restart = True
+
+    if restart:
+        match input("Do you want to play again? (Y/n) "):
+            case 'Y' | 'y':
+                new_game = True
+            case 'N' | 'n':
+                pygame.quit()
+                running = False
+
+    if new_game:
+        map_num = input(f"Select a map (1 - {len(maps)}): ")
+        current_state = maps[int(map_num) - 1]
+        new_game = False
+        restart = False

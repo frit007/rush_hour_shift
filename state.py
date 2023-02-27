@@ -7,6 +7,8 @@ class RoadState:
     def __init__(self, y_offset:int, road:Road) -> None:
         self.y_offset = y_offset
         self.road = road
+    def __repr__(self):
+        return f"RoadState: y_offset: {self.y_offset} road: {self.road}\n"
 
     def from_x(self):
         return self.road.from_x
@@ -30,14 +32,13 @@ class CarState:
         self.car = car
 
     def __repr__(self):
-        return "CarState: pos: ({}, {})".format(self.x, self.y)
+        return f"CarState: pos: ({self.x}, {self.y}) car: {self.car}\n"
     
     def is_on_square(self, x: int, y: int):
         if self.car.direction == Direction.HORIZONTAL:
             return y == self.y and x >= self.x and x < self.x + self.car.car_length
         else:
             return x == self.x and y >= self.y and y < self.y + self.car.car_length
-
 
 class State:
     roads: list[RoadState]
@@ -46,8 +47,13 @@ class State:
     # Don't store the actual cards, instead store how many of each card is still available in the deck
     # the index in the array corresponds to 
     cards: list[int]
-    def __init__(self) -> None:
-        pass
+    def __init__(self, roads, cars, turn, cards) -> None:
+        self.roads = roads
+        self.cars = cars
+        self.turn = turn
+        self.cards = cards
+    def __repr__(self):
+        return f"State: roads: {self.roads} cars: {self.cars} turn: {self.turn} cards: {self.cards}\n"
 
 
     
@@ -226,17 +232,6 @@ class State:
 
 
         
-
-    def __place_cars() -> list[CarState]:
-        # We can take game setups from here
-        # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
-        # | | | | |X[ | | | ] |X| | | |
-        # |P|P| | |X[X| | | ] |X|O|O|O|
-        # | | | | | [X|X|X| ] |X| | | |
-        # | | | |X| [ |X|X|X] | | | | |
-        # |O|O|O|X| [ | | |X]X| | |P|P|
-        # | | | |X| [ | | | ]X| | | | |
-        pass
 
     def heuristic():
         # Calculate a heuristic for this field, this could include
