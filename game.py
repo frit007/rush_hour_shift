@@ -1,6 +1,4 @@
 import os
-
-from human_player import HumanPlayer
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 from tkinter import *
@@ -9,6 +7,7 @@ from tkinter import ttk
 from type import *
 from state import *
 from player import *
+from human_player import HumanPlayer
 from loader import load_maps
 from ui import *
 
@@ -68,7 +67,7 @@ def init_main_screen(root):
     style = ttk.Style()
     style.theme_use('clam')
     style.configure('TFrame', background=MAIN_BG_COLOR)
-    style.configure('TLabel', background=MAIN_BG_COLOR, foreground='white')
+    style.configure('TLabel', background=MAIN_BG_COLOR, foreground=FONT_COLOR)
 
     content = ttk.Frame(root)
     frame = ttk.Frame(content, padding=10, width=SCREEN_SIZE[0], height=SCREEN_SIZE[1])

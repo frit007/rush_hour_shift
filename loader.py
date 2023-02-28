@@ -38,6 +38,7 @@ car_images = {2 : [audi_red, audi_purple, police, taxi],
 horizontal_markers = ['O', '1', '2']
 vertical_markers = ['X']
 road_divider = ['[']
+dividers = [*road_divider, '|', ']']
 valid_markers = [*horizontal_markers, *vertical_markers]
 
 def followTrail(lines : list[str], i : int, x : int, y : int, 
@@ -99,16 +100,14 @@ def read_map(lines : list[str]) -> State:
 
             if divider in road_divider:
                 (x0, y0), (x1, y1) = followTrail(lines, i, x, y, divider)
+
+                map.roads.append(RoadState(0, Road(0, x0 - 1, y0, y1)))
                 map.roads.append(RoadState(0, Road(x0, x1, y0, y1)))
+                x_max = len([ch for ch in lines[y] if ch not in dividers]) - 1
+                map.roads.append(RoadState(0, Road(x1 + 1, x_max, y0, y1)))
 
             x += 1
 
-    # FIXME: otherwise it only contains one road
-    map.roads = [
-            RoadState(0, Road(0, 4, 0, 5)),
-            RoadState(0, Road(5, 8, 0, 5)),
-            RoadState(0, Road(9, 13, 0, 5)),
-        ]
     return map
 
 def parse_number(name: str):

@@ -8,12 +8,12 @@ import os
 
 # Define the background colour
 # using RGB color coding.
-MAIN_BG_COLOR = '#87CEEB'
-GAME_BG_COLOR = (197, 224, 219)
+MAIN_BG_COLOR = '#C5E0DB'
+GAME_BG_COLOR = pygame.Color(MAIN_BG_COLOR)
+FONT_COLOR = '#313131'
 
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
-
 
 TILE_SIZE = 30
 NAME = 'Rush Hour Shift'
