@@ -99,15 +99,15 @@ def read_map(lines : list[str]) -> State:
 
             if divider in road_divider:
                 (x0, y0), (x1, y1) = followTrail(lines, i, x, y, divider)
-                map.roads.append(RoadState(0, Road(x0, x1, y0, y1)))
+                map.roads.append(RoadState(0, Road(x0, x1, y0, y1, False)))
 
             x += 1
 
     # FIXME: otherwise it only contains one road
     map.roads = [
-            RoadState(0, Road(0, 4, 0, 5)),
-            RoadState(0, Road(5, 8, 0, 5)),
-            RoadState(0, Road(9, 13, 0, 5)),
+            RoadState(0, Road(0, 4, 0, 5, True)),
+            RoadState(0, Road(5, 8, 0, 5, False)),
+            RoadState(0, Road(9, 13, 0, 5, True)),
         ]
     return map
 

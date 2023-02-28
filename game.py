@@ -1,4 +1,5 @@
 import os
+from time import sleep
 
 from human_player import HumanPlayer
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
@@ -37,6 +38,10 @@ def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
         current_state = current_state.apply_action(action)
         current_state.switch_turn()
         turn = (turn + 1) % 2
+        draw_state(current_state)
+        pygame.display.flip()
+        sleep(0.4)
+
     
     if(current_state.get_winner() == Owner.PLAYER1):
         print("Player 1 won")
