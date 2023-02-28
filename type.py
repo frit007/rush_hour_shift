@@ -22,6 +22,7 @@ class Road:
     to_x: int
     from_y: int
     to_y: int
+    allow_movement: bool
 
 @dataclass(frozen=True, slots=True)
 class Car:

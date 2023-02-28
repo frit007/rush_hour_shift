@@ -165,7 +165,8 @@ class State:
 
         # only horizontal cars can lock
         horizontal_car_states = [car for car in self.cars if car.car.direction == Direction.HORIZONTAL]
-        for road in self.roads:
+        moveable_roads = [road for road in self.roads if road.road.allow_movement]
+        for road in moveable_roads:
             for car_state in horizontal_car_states:
                 if ((car_state.x <= road.to_x() and car_state.x + car_state.car.car_length - 1 > road.to_x())
                     or 

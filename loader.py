@@ -101,10 +101,10 @@ def read_map(lines : list[str]) -> State:
             if divider in road_divider:
                 (x0, y0), (x1, y1) = followTrail(lines, i, x, y, divider)
 
-                map.roads.append(RoadState(0, Road(0, x0 - 1, y0, y1)))
-                map.roads.append(RoadState(0, Road(x0, x1, y0, y1)))
+                map.roads.append(RoadState(0, Road(0, x0 - 1, y0, y1, True)))
+                map.roads.append(RoadState(0, Road(x0, x1, y0, y1, False)))
                 x_max = len([ch for ch in lines[y] if ch not in dividers]) - 1
-                map.roads.append(RoadState(0, Road(x1 + 1, x_max, y0, y1)))
+                map.roads.append(RoadState(0, Road(x1 + 1, x_max, y0, y1, True)))
 
             x += 1
 
