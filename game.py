@@ -74,16 +74,16 @@ def init_main_screen(root):
     title = ttk.Label(content, text=NAME, font=(FONT + ' Bold', 30))
 
     map_text = ttk.Label(content, text='Pick a map:', font=(FONT, 20))
-    map_drop = ttk.Combobox(content, values=map_options)
+    map_drop = ttk.Combobox(content, state='readonly', values=map_options)
     map_drop.current(0)
 
     player_text = ttk.Label(content, text='Select Players:', font=(FONT, 20))
     player1_text = ttk.Label(content, text='Player 1:', font=(FONT, 20))
-    player1_drop = ttk.Combobox(content, values=player_options)
+    player1_drop = ttk.Combobox(content, state='readonly', values=player_options)
     player1_drop.current(0)
 
     player2_text = ttk.Label(content, text='Player 2:', font=(FONT, 20))
-    player2_drop = ttk.Combobox(content, values=player_options)
+    player2_drop = ttk.Combobox(content, state='readonly', values=player_options)
     player2_drop.current(0)
 
     start_btn = ttk.Button(content, text='Start', command=lambda: new_game(root, 
