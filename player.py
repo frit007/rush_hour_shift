@@ -7,12 +7,13 @@ from type import Action, Owner
 from ui import *
 
 class Player:
-    def play(self, state):
+    name: str
+    def play(self, state, history: set[State]):
         pass
 
 class AIPlayer(Player):
     # random AI(currently cheats by moving your car)
-    def play(self, state: State):
+    def play(self, state: State, history: set[State]):
         shifts = state.all_shifts()
         shift = None
         if len(shifts) > 0:

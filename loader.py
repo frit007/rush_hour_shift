@@ -60,7 +60,8 @@ def followTrail(lines : list[str], i : int, x : int, y : int,
 
 
 def read_map(lines : list[str]) -> State:
-    map = State([], [], Owner.PLAYER1, [])
+    cars = []
+    roads = []
     car_id = 0
     for i in range(len(lines)):
         lines[i] = list(lines[i].replace("\n",""))
@@ -95,19 +96,21 @@ def read_map(lines : list[str]) -> State:
                     image = random.choice(car_images[length])
                     car = Car(car_id, image, length, Direction.VERTICAL, Owner.NEUTRAL)
 
-                map.cars.append(CarState(x0, y0, car))
+                cars.append(CarState(x0, y0, car))
                 car_id = car_id + 1
 
             if divider in road_divider:
                 (x0, y0), (x1, y1) = followTrail(lines, i, x, y, divider)
 
-                map.roads.append(RoadState(0, Road(0, x0 - 1, y0, y1, True)))
-                map.roads.append(RoadState(0, Road(x0, x1, y0, y1, False)))
+                roads.append(RoadState(0, Road(0, x0 - 1, y0, y1, True)))
+                roads.append(RoadState(0, Road(x0, x1, y0, y1, False)))
                 x_max = len([ch for ch in lines[y] if ch not in dividers]) - 1
-                map.roads.append(RoadState(0, Road(x1 + 1, x_max, y0, y1, True)))
+                roads.append(RoadState(0, Road(x1 + 1, x_max, y0, y1, True)))
 
             x += 1
 
+    map = State(roads, cars, Owner.PLAYER1, [])
+    map.generate_map()
     return map
 
 def parse_number(name: str):

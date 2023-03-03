@@ -1,7 +1,7 @@
 import os
-from time import sleep
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
+from time import sleep
 from tkinter import *
 from tkinter import ttk
 
@@ -33,11 +33,13 @@ def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
 
     current_state = initial_state
 
+    history = set()
+
     while current_state.get_winner() == None:
-        action = players[turn].play(current_state)
+        action = players[turn].play(current_state, history)
+        history.add(current_state)
         current_state = current_state.apply_action(action)
-        current_state.switch_turn()
-        turn = (turn + 1) % 2
+        turn = (turn + 1) % 2 # switch players
         draw_state(current_state)
         pygame.display.flip()
         sleep(0.4)
@@ -63,8 +65,8 @@ def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
 
 def init_main_screen(root):
     map_options, maps = map(list, zip(*load_maps()))
-    players = [AIPlayer, MinimaxPlayer, HumanPlayer] # TODO:
-    player_options = ['AI', 'Minimax', 'Human']
+    players = [AIPlayer, MinimaxPlayer, HumanPlayer]
+    player_options = ['Human', 'AI', 'Minimax']
 
     root.title(NAME)
     root.geometry(f'{SCREEN_SIZE[0]}x{SCREEN_SIZE[1]}')

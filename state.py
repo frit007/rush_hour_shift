@@ -40,6 +40,7 @@ class CarState:
         else:
             return x == self.x and y >= self.y and y < self.y + self.car.car_length
 
+# @dataclass(frozen=True, slots=True)
 class State:
     roads: list[RoadState]
     cars: list[CarState]
@@ -47,11 +48,22 @@ class State:
     # Don't store the actual cards, instead store how many of each card is still available in the deck
     # the index in the array corresponds to 
     cards: list[int]
-    def __init__(self, roads: list[RoadState], cars: list[RoadState], turn: Owner, cards: list[int]) -> None:
+    car_map: dict[(int,int), Car]
+    
+    def __init__(self, roads: list[RoadState], cars: list[CarState], turn: Owner, cards: list[int]) -> None:
         self.roads = roads
         self.cars = cars
         self.turn = turn
         self.cards = cards
+        # Create a car map
+
+    def generate_map(self):
+        self.car_map = {}
+        for car_state in self.cars:
+            delta = (1,0) if car_state.car.direction == Direction.HORIZONTAL else (0,1)
+            for i in range(car_state.car.car_length):
+                self.car_map[(car_state.x + delta[0] * i, car_state.y + delta[1] * i)] = car_state.car
+
     def __repr__(self):
         return f"State: roads: {self.roads} cars: {self.cars} turn: {self.turn} cards: {self.cards}\n"
     
@@ -64,7 +76,7 @@ class State:
     # TODO maybe there is something more efficient than copy
     # Note: This doesn't switch whose turn it is
     # Return a new state, with the actions applied
-    def apply_action(self, action: Action):
+    def apply_action(self, action: Action, switch_turn: bool = True):
         new_state = copyState(self)
         if action.shift != None:
             shift = action.shift
@@ -82,7 +94,25 @@ class State:
                     current_car_state.car
                 )
             )
+            
+        if switch_turn:
+            new_state.switch_turn()
+        new_state.generate_map()
         return new_state
+    
+    def minimized_state(self):
+        cars = [(car_state.car.id, car_state.x, car_state.y) for car_state in self.cars]
+        cars.sort()
+        road = [road_state.y_offset for road_state in self.roads]
+        return (tuple(cars), tuple(road), self.turn, tuple(self.cards))
+
+    def __hash__(self):
+        return hash(self.minimized_state())
+    
+    def __eq__(self, other):
+        if isinstance(other, State):
+            return self.minimized_state() == other.minimized_state()
+        return False
 
     def __get_and_remove_car_state(self, car: Car) -> CarState:
         found_state = None
@@ -92,9 +122,27 @@ class State:
                 break
         self.cars.remove(found_state)
         return found_state
+        
+    def get_player_cars(self) -> tuple[CarState, CarState]:
+        player1_car = None
+        player2_car = None
+        for car in self.cars:
+            if car.car.owner == Owner.PLAYER1:
+                player1_car = car
+            elif car.car.owner == Owner.PLAYER2:
+                player2_car = car
+        return player1_car, player2_car
 
     def get_legal_actions(self) -> list[Action]:
-        pass
+        actions = [Action(shift, []) for shift in self.all_shifts()]
+        
+        # allow moving any NEUTRAL or PLAYER car
+        for car in self.cars:
+            if car.car.owner == self.turn or car.car.owner == Owner.NEUTRAL:
+                for move in self.car_moves(car, 3):
+                    actions.append(Action(None, [move]))
+
+        return actions
 
     # slight rule change, 
     # the player when they reach the end of the board, 
@@ -158,9 +206,7 @@ class State:
                 return True
         return False
 
-
-    def is_blocked(self, x:int, y:int, except_car :Car):
-        # Check if the position is part of any road
+    def is_on_road(self, x: int, y: int):
         part_of_road = False
         for road_state in self.roads:
             if (x >= road_state.from_x() 
@@ -168,13 +214,20 @@ class State:
                 and y >= road_state.from_y() 
                 and y <= road_state.to_y()):
                     part_of_road = True
-        if not part_of_road:
+        return part_of_road
+
+    def is_blocked(self, x:int, y:int, except_car: Car):
+        # Check if the position is part of any road
+        if not self.is_on_road(x,y):
             return True
 
         # Check if another car is on the same tile
-        for car in self.cars:
-            if car.is_on_square(x,y) and car.car != except_car:
-                return True
+        # for car in self.cars:
+        #     if car.is_on_square(x,y) and car.car != except_car:
+        #         return True
+        existingCar = self.car_map.get((x,y))
+        if existingCar not in [None, except_car]:
+            return True
             
         return False
 

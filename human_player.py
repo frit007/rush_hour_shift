@@ -16,7 +16,7 @@ class HumanPlayer(Player):
     current_shift: Shift
 
 
-    def play(self, state: State) -> Action:
+    def play(self, state: State, history: set[State]) -> Action:
 
         self.original_state = state
         self.current_state = state
@@ -57,8 +57,9 @@ class HumanPlayer(Player):
                        moves = [x.move for x in move_and_positions if x.position == element.grid_pos]
                        if len(moves) > 0:
                            # The player made a legal move
-                           self.current_state = self.current_state.apply_action(Action(None, moves))
-                           self.moves_remaining -= moves[0].magnitude()
+                           self.current_state = self.current_state.apply_action(Action(None, moves), False)
+                        #    self.moves_remaining -= moves[0].magnitude()
+                           self.moves_remaining = 0
                            # Once you move a car you can no longer move a road
                            self.shifts_remaining = 0
                            # update action so we can update the state once the player has done their turn
@@ -84,7 +85,7 @@ class HumanPlayer(Player):
         if new_shift in relevant_shifts or new_shift.y_delta == 0:
             self.current_shift = new_shift
         if self.current_shift != None:
-            self.current_state = self.original_state.apply_action(Action(self.current_shift,  []))
+            self.current_state = self.original_state.apply_action(Action(self.current_shift,  []), False)
 
         draw_offset = draw_state(self.current_state)
 
@@ -107,6 +108,7 @@ class HumanPlayer(Player):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.current_shift != None:
                     self.action = Action(self.current_shift, [])
+                    self.moves_remaining = 0
                 else:
                     self.action = Action(None, [])
                     self.current_state = self.original_state
