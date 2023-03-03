@@ -65,7 +65,7 @@ def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
 
 def init_main_screen(root):
     map_options, maps = map(list, zip(*load_maps()))
-    players = [AIPlayer, MinimaxPlayer, HumanPlayer]
+    players = [HumanPlayer, AIPlayer, MinimaxPlayer]
     player_options = ['Human', 'AI', 'Minimax']
 
     root.title(NAME)

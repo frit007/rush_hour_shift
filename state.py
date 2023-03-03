@@ -83,7 +83,7 @@ class State:
             road = shift.road
             # Make copies of the original state, but shifted
             new_state.roads = [RoadState(road_state.y_offset + shift.y_delta if road_state.road == road else road_state.y_offset, road_state.road) for road_state in self.roads]
-            new_state.cars = [CarState(car_state.x, car_state.y + (action.shift.y_delta if road.from_x() <= car_state.x and car_state.x <= road.to_x() else 0), car_state.car) for car_state in new_state.cars]
+            new_state.cars = [CarState(car_state.x, car_state.y + (action.shift.y_delta if road.from_x <= car_state.x and car_state.x <= road.to_x else 0), car_state.car) for car_state in new_state.cars]
 
         for move in action.moves:
             current_car_state = new_state.__get_and_remove_car_state(move.car)
