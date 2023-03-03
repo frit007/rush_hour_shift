@@ -54,8 +54,6 @@ class State:
         self.cards = cards
     def __repr__(self):
         return f"State: roads: {self.roads} cars: {self.cars} turn: {self.turn} cards: {self.cards}\n"
-
-
     
     def switch_turn(self):
         if self.turn == Owner.PLAYER1:
@@ -73,17 +71,17 @@ class State:
             road = shift.road
             # Make copies of the original state, but shifted
             new_state.roads = [RoadState(road_state.y_offset + shift.y_delta if road_state.road == road else road_state.y_offset, road_state.road) for road_state in self.roads]
-            new_state.cars = [CarState(car_state.x, car_state.y + (action.shift.y_delta if road.from_x <= car_state.x and car_state.x <= road.to_x else 0), car_state.car) for car_state in new_state.cars]
+            new_state.cars = [CarState(car_state.x, car_state.y + (action.shift.y_delta if road.from_x() <= car_state.x and car_state.x <= road.to_x() else 0), car_state.car) for car_state in new_state.cars]
 
         for move in action.moves:
             current_car_state = new_state.__get_and_remove_car_state(move.car)
             new_state.cars.append(
                 CarState(
-                        current_car_state.x + move.x_delta, 
-                        current_car_state.y + move.y_delta,
-                        current_car_state.car
-                    )
+                    current_car_state.x + move.x_delta, 
+                    current_car_state.y + move.y_delta,
+                    current_car_state.car
                 )
+            )
         return new_state
 
     def __get_and_remove_car_state(self, car: Car) -> CarState:
@@ -94,21 +92,6 @@ class State:
                 break
         self.cars.remove(found_state)
         return found_state
-        
-        
-    
-    def play(self):
-        if self.turn == Owner.PLAYER1:
-            # avoid storing players as part of the state, players could be stored in an external array
-            pass
-        else:
-            pass
-
-    def draw(self):
-        # go through roads and draw them
-        # go through cars and draw them
-        # Maybe move somewhere else
-        pass
 
     def get_legal_actions(self) -> list[Action]:
         pass
@@ -123,17 +106,6 @@ class State:
             if car_state.car.owner == Owner.PLAYER2 and car_state.x == 0:
                 return Owner.PLAYER2
         return None
-    def new_game(self):
-        # Maybe move to constructor
-        self.roads = [
-            RoadState(0, Road(0, 4, 0, 5)),
-            RoadState(0, Road(5, 8, 0, 5)),
-            RoadState(0, Road(5, 8, 0, 5)),
-        ]
-        
-        self.cars = self.__place_cars()
-        self.cards = [5,5,5,5,5]
-        self.turn = Owner.PLAYER1
 
     def all_shifts(self) -> list[Shift]:
         shifts = []
@@ -235,20 +207,6 @@ class State:
                 break
 
         return moves
-                
-
-
-
-
-
-        
-
-    def heuristic():
-        # Heuristic should probably be moved to ai player, since each AI is free to choose their own heuristic
-        # Calculate a heuristic for this field, this could include
-        # - distance of to the goal
-        # - cars blocking the cars
-        pass
 
 # Note: this is not declared as a member functions, due to typing limitations
 def copyState(state:State) -> State:

@@ -1,7 +1,5 @@
 import os
 from time import sleep
-
-from human_player import HumanPlayer
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 from tkinter import *
@@ -11,6 +9,7 @@ from type import *
 from state import *
 from player import *
 from human_player import HumanPlayer
+from minimax_player import MinimaxPlayer
 from loader import load_maps
 from ui import *
 
@@ -64,8 +63,8 @@ def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
 
 def init_main_screen(root):
     map_options, maps = map(list, zip(*load_maps()))
-    players = [AIPlayer(), HumanPlayer()] # TODO:
-    player_options = ['AI', 'Human']
+    players = [AIPlayer, MinimaxPlayer, HumanPlayer] # TODO:
+    player_options = ['AI', 'Minimax', 'Human']
 
     root.title(NAME)
     root.geometry(f'{SCREEN_SIZE[0]}x{SCREEN_SIZE[1]}')
@@ -95,8 +94,8 @@ def init_main_screen(root):
 
     start_btn = ttk.Button(content, text='Start', command=lambda: new_game(root, 
                                                                            maps[map_drop.current()], 
-                                                                           players[player1_drop.current()], 
-                                                                           players[player2_drop.current()]))
+                                                                           players[player1_drop.current()](), 
+                                                                           players[player2_drop.current()]()))
     quit_btn = ttk.Button(content, text='Quit', command=root.destroy)
 
     content.grid(column=0, row=0)

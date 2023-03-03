@@ -10,10 +10,6 @@ class Player:
     def play(self, state):
         pass
 
-
-
-
-
 class AIPlayer(Player):
     # random AI(currently cheats by moving your car)
     def play(self, state: State):
@@ -23,7 +19,6 @@ class AIPlayer(Player):
             shift = random.choice(state.all_shifts())
         
         state = state.apply_action(Action(shift, []))
-
         move_limit = 3
         played_moves = []
         while move_limit > 0:
@@ -37,4 +32,11 @@ class AIPlayer(Player):
                     played_moves.append(move)
                 
         return Action(shift, played_moves)
+    
+    def heuristic():
+        # Heuristic should probably be moved to ai player, since each AI is free to choose their own heuristic
+        # Calculate a heuristic for this field, this could include
+        # - distance of to the goal
+        # - cars blocking the cars
+        pass
     
