@@ -7,6 +7,8 @@ from ui import *
 
 class HumanPlayer(Player):
 
+    name = "Human"
+
     selected_road: OverlappingElement
     selected_car: OverlappingElement
     shifts_remaining: int

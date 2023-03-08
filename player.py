@@ -12,6 +12,7 @@ class Player:
         pass
 
 class AIPlayer(Player):
+    name = "Random player"
     # random AI(currently cheats by moving your car)
     def play(self, state: State, history: set[State]):
         shifts = state.all_shifts()

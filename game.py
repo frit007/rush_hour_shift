@@ -1,4 +1,7 @@
 import os
+from greedy_player import GreedyPlayer
+
+from iterativ_deepening_player import IterativeDeepeningPlayer
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 from time import sleep
@@ -65,8 +68,8 @@ def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
 
 def init_main_screen(root):
     map_options, maps = map(list, zip(*load_maps()))
-    players = [HumanPlayer, AIPlayer, MinimaxPlayer]
-    player_options = ['Human', 'AI', 'Minimax']
+    players = [HumanPlayer, AIPlayer, MinimaxPlayer, IterativeDeepeningPlayer, GreedyPlayer]
+    player_options = [player.name for player in players]
 
     root.title(NAME)
     root.geometry(f'{SCREEN_SIZE[0]}x{SCREEN_SIZE[1]}')
