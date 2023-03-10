@@ -150,12 +150,20 @@ class State:
     # the player when they reach the end of the board, 
     # not when they have driven over the edge
     def get_winner(self):
-        for car_state in self.cars:
-            if car_state.car.owner == Owner.PLAYER1 and car_state.x == 12:
-                return Owner.PLAYER1
-            if car_state.car.owner == Owner.PLAYER2 and car_state.x == 0:
-                return Owner.PLAYER2
-        return None
+        player1_car, player2_car = self.get_player_cars()
+
+        if player1_car.x == 12:
+            return Owner.PLAYER1
+        elif player2_car.x == 0:
+            return Owner.PLAYER2
+        else:
+            return None
+
+    def is_draw(self):
+        player1_car, player2_car = self.get_player_cars()
+        return (player1_car.y == player2_car.y 
+              and player1_car.x - player2_car.x + 2 == 0
+              and player1_car.x not in [road_state.road.to_x - 1 for road_state in self.roads])
 
     def all_shifts(self) -> list[Shift]:
         shifts = []

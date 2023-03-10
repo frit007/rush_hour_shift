@@ -162,75 +162,135 @@ class GreedyPlayer(Player):
                 return v, move
         return v, move
 
-    def heuristic(self, state:State):
+    # def heuristic(self, state:State):
+    #     player1_car, player2_car = state.get_player_cars()
+
+    #     # player2_score = player_2_car.x
+
+    #     # score = abs(player2_score - 12)
+
+    #     score = 0
+    #     player1_blocking = 0
+    #     player2_blocking = 0
+        
+    #     # Include road
+    #     player1_roadblocks = 0
+    #     for road in state.roads:
+    #         if (not(player1_car.y >= road.from_y() 
+    #             and player1_car.y <= road.to_y())
+    #             and player1_car.x <= road.from_x()):
+                
+    #             player1_roadblocks += road.to_x() - road.from_x() + 1
+
+    #     player2_roadblocks = 0
+    #     for road in state.roads:
+    #         if (not(player2_car.y >= road.from_y() 
+    #             and player2_car.y <= road.to_y())
+    #             and player2_car.x >= road.to_x()):
+                
+    #             player2_roadblocks += road.to_x() - road.from_x() + 1
+    #     # return player2_roadblocks
+    #     # print(f"p1 blocks {player1_roadblocks}; p2 blocks {player2_roadblocks}")
+    #     for x in range(player1_car.x + 2, 13):
+    #         car = state.car_map.get((x, player1_car.y))
+    #         if car != None:
+    #             if car.direction == Direction.HORIZONTAL:
+    #                 # avoid horizontal cars on the same row
+    #                 player1_blocking += 10
+    #             player1_blocking += 1
+            
+    #     for x in range(player2_car.x - 1, 0, -1):
+    #         car = state.car_map.get((x, player2_car.y))
+    #         if car != None:
+    #             if car.direction == Direction.HORIZONTAL:
+    #                 # avoid horizontal cars on the same row
+    #                 player2_blocking += 10
+    #             player2_blocking += 1
+
+    #     player1_score = - player1_blocking - player1_roadblocks + abs(player1_car.x - 0) * 20
+    #     player2_score = - player2_blocking - player2_roadblocks + abs(player2_car.x - 12) * 20
+
+    #     if self.owner == Owner.PLAYER1:
+    #         # score = player_1_car.x - abs(player_2_car.x - 13) * 0.0 
+    #         # score = player_1_car.x - abs(player_2_car.x - 13) * 0.0
+    #         score = player1_score - player2_score * 0.3
+    #     else:
+    #         # print(player2_blocking)
+    #         # score = abs(player_2_car.x - 13) - player
+    #         # _1_car.x * 0.0
+    #         score = player2_score - player1_score * 0.3
+    #     # if state.turn == Owner.PLAYER1:
+    #     #     # score = player_1_car.x - abs(player_2_car.x - 13) * 0.0 
+    #     #     # score = player_1_car.x - abs(player_2_car.x - 13) * 0.0
+    #     #     score = player1_score
+    #     # else:
+    #     #     # print(player2_blocking)
+    #     #     # score = abs(player_2_car.x - 13) - player_1_car.x * 0.0
+    #     #     score = player2_score
+
+
+    #     # flipped_score = -score if state.turn != self.owner else score
+    #     # flipped_score = score
+
+    #     return score
+    
+
+    def heuristic(self, state: State):
         player1_car, player2_car = state.get_player_cars()
 
-        # player2_score = player_2_car.x
-
-        # score = abs(player2_score - 12)
-
-        score = 0
-        player1_blocking = 0
-        player2_blocking = 0
-        
         # Include road
-        player1_roadblocks = 0
-        for road in state.roads:
-            if (not(player1_car.y >= road.from_y() 
-                and player1_car.y <= road.to_y())
-                and player1_car.x <= road.from_x()):
-                
-                player1_roadblocks += road.to_x() - road.from_x() + 1
 
-        player2_roadblocks = 0
-        for road in state.roads:
-            if (not(player2_car.y >= road.from_y() 
-                and player2_car.y <= road.to_y())
-                and player2_car.x >= road.to_x()):
-                
-                player2_roadblocks += road.to_x() - road.from_x() + 1
-        # return player2_roadblocks
-        # print(f"p1 blocks {player1_roadblocks}; p2 blocks {player2_roadblocks}")
-        for x in range(player1_car.x + 2, 13):
-            car = state.car_map.get((x, player1_car.y))
-            if car != None:
-                if car.direction == Direction.HORIZONTAL:
-                    # avoid horizontal cars on the same row
-                    player1_blocking += 50
-                player1_blocking += 1
-            
-        for x in range(player2_car.x - 1, 0, -1):
-            car = state.car_map.get((x, player2_car.y))
-            if car != None:
-                if car.direction == Direction.HORIZONTAL:
-                    # avoid horizontal cars on the same row
-                    player2_blocking += 10
-                player2_blocking += 1
 
-        player1_score = - player1_blocking - player1_roadblocks + abs(player1_car.x - 0) * 20
-        player2_score = - player2_blocking - player2_roadblocks + abs(player2_car.x - 12) * 20
+        
+        # total amount of horizontal cars (on connected path) - horizontal cars blocking (on connected path)?
+
+        car_block_potential = 90
+
+      
+        #player1_score = - player1_blocking - player1_roadblocks + abs(player1_car.x - 0) * 20
+        #player2_score = - player2_blocking - player2_roadblocks + abs(player2_car.x - 12) * 20
+
+        # if self.owner == Owner.PLAYER1:
+        #     return 20 * (13 - player1_car.x) + player1_roadblocks
+        # else:
+        #     return 20 * player2_car.x + player2_roadblocks
 
         if self.owner == Owner.PLAYER1:
-            # score = player_1_car.x - abs(player_2_car.x - 13) * 0.0 
-            # score = player_1_car.x - abs(player_2_car.x - 13) * 0.0
-            score = player1_score
+            player1_roadblocks = 0
+            for road in state.roads:
+                if (not(player1_car.y >= road.from_y() 
+                    and player1_car.y <= road.to_y())
+                    and player1_car.x <= road.from_x()):
+                    
+                    player1_roadblocks += road.to_x() - road.from_x() + 1
+
+            player1_blocking = 0
+            distance = 10
+            for x in range(player1_car.x + 2, min(13, player1_car.x + 2 + 5)):
+                distance -= 2
+                car = state.car_map.get((x, player1_car.y))
+                if car != None:
+                    if car.direction == Direction.HORIZONTAL:
+                        # avoid horizontal cars on the same row
+                        player1_blocking += distance * 2
+                    player1_blocking += distance
+            return 20 * player1_car.x + 0.5 * (car_block_potential - player1_blocking) + 9 - player1_roadblocks
         else:
-            # print(player2_blocking)
-            # score = abs(player_2_car.x - 13) - player
-            # _1_car.x * 0.0
-            score = player2_score - player1_score * 0.3
-        # if state.turn == Owner.PLAYER1:
-        #     # score = player_1_car.x - abs(player_2_car.x - 13) * 0.0 
-        #     # score = player_1_car.x - abs(player_2_car.x - 13) * 0.0
-        #     score = player1_score
-        # else:
-        #     # print(player2_blocking)
-        #     # score = abs(player_2_car.x - 13) - player_1_car.x * 0.0
-        #     score = player2_score
-
-
-        # flipped_score = -score if state.turn != self.owner else score
-        # flipped_score = score
-
-        return score
-    
+            player2_roadblocks = 0
+            for road in state.roads:
+                if (not(player2_car.y >= road.from_y() 
+                    and player2_car.y <= road.to_y())
+                    and player2_car.x >= road.to_x()):
+                    
+                    player2_roadblocks += road.to_x() - road.from_x() + 1
+            player2_blocking = 0    
+            distance = 10
+            for x in range(player2_car.x - 1, max(0, player2_car.x - 1 - 5), -1):
+                distance -= 2
+                car = state.car_map.get((x, player2_car.y))
+                if car != None:
+                    if car.direction == Direction.HORIZONTAL:
+                        # avoid horizontal cars on the same row
+                        player2_blocking += distance * 2
+                    player2_blocking += distance
+            return 20 * abs(player2_car.x - 13) + 0.5 * (car_block_potential - player2_blocking) + 9 - player2_roadblocks

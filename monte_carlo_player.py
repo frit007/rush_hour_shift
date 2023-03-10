@@ -7,19 +7,20 @@ from state import State
 from type import Action, Direction, Owner
 from ui import *
 from player import Player, AIPlayer
-from greedy_player import GreedyPlayer
 
 class Node:
     parent: Node
     children: list[Node] 
     playouts: int
     wins: int
+    our_wins: int
     lead_to: Action
     state: State
     def __init__(self, parent: Node, children: Node, lead_to: Action, state: State) -> None:
         self.parent = parent
         self.playouts = 0
         self.wins = 0
+        self.our_wins = 0
         self.children = children
         self.lead_to = lead_to
         self.state = state
@@ -40,15 +41,16 @@ class Node:
 
     def __repr__(self):
         if(self.depth() < 2): 
-            return f"Node: playouts: {self.playouts} depth: {self.depth()} wins: {self.wins} action: {self.lead_to} children: {self.children}\n"
-        else: 
-            return f"Node: playouts: {self.playouts} depth: {self.depth()} wins: {self.wins} action: {self.lead_to} children: __omitted__\n"
+            return f"Node: player: {self.state.turn} playouts: {self.playouts} depth: {self.depth()} wins: {self.wins} our_wins {self.our_wins} action: {self.lead_to} children: {self.children}\n"
+        else:
+            return f"Node: player: {self.state.turn} playouts: {self.playouts} depth: {self.depth()} wins: {self.wins} our_wins {self.our_wins} action: {self.lead_to} children: __omitted__\n"
+
 class MonteCarloPlayer(Player):
     name = "Monte Carlo Player"
     owner: Owner
 
     def play(self, state: State, history: set[State]) -> Action:
-        # self.history = history
+        self.history = history
         self.owner = state.turn
         tree = Node(None, [], None, state)
         return self.monte_carlo_tree_search(tree, 300)
@@ -59,16 +61,17 @@ class MonteCarloPlayer(Player):
         counter = 0
         #while end - start < seconds:
         while counter < 1000:
+            print(f"({counter}) ",end="")
             leaf = self.select(tree) 
             child = self.expand(leaf)
             result = self.simulate(child)
             self.back_propagate(result, child)
             counter += 1
             end = time.time()
-        
+
         print("loops: " + str(counter))
         print(tree)
-        best_child = max(tree.children, key=lambda c: self.heuristic(c.state))
+        best_child = max(tree.children, key=lambda c: c.playouts)
         return best_child.lead_to
 
     def UCB1(self, node: Node) -> Node:
@@ -97,113 +100,124 @@ class MonteCarloPlayer(Player):
             return node
         
         for a in node.state.get_legal_actions():
-            child = Node(node, [], a, node.state.apply_action(a))
-            node.addChild(child)
+            new_state = node.state.apply_action(a)
+            if new_state not in self.history:
+                child = Node(node, [], a, new_state)
+                node.addChild(child)
 
-        node.children.sort(key=lambda c: self.heuristic(c.state))
+        node.children.sort(key=lambda c: self.heuristic(c.state, self.owner), reverse = True)
         return node.children[0]
 
     def simulate(self, node: Node) -> State:
-        greedy = GreedyPlayer()
-        rand = AIPlayer()
+        # greedy = GreedyPlayer()
+        # rand = AIPlayer()
         current_state = node.state
         counter = 0
+        # history = self.history.copy()
+    
         while current_state.get_winner() == None:
             counter += 1
-            if random.randrange(0,100) > 80:
-                action = rand.play(current_state, greedy.history)
-            else:
-                action = greedy.play(current_state, greedy.history)
+            # if random.randrange(0,100) > 80:
+            #     action = rand.play(current_state, greedy.history)
+            # else:
+            #     action = greedy.play(current_state, greedy.history)
+            current_state = self.playout_policy(current_state, counter)
+            # history.add(current_state)
+            # greedy.history.add(current_state)
+            # current_state = current_state.apply_action(action)
 
-            #current_state = self.playout_policy(current_state)
-            greedy.history.add(current_state)
-            current_state = current_state.apply_action(action)
-
-        print("playout moves: " + str(counter))
-        return Owner.PLAYER2 if current_state.turn == Owner.PLAYER1 else Owner.PLAYER1 # this is the winner right?
+        print("playout moves: " + str(counter), flush=True)
+        return current_state.get_winner()
 
     def back_propagate(self, winner: Owner, node: Node) -> State:
         while True:
             node.playouts += 1
-            if node.state.turn == winner:
+            # if node.state.turn == winner:
+            #     node.wins += 1
+            if node.state.turn != winner:
                 node.wins += 1
+            if self.owner == winner:
+                node.our_wins += 1
 
             if node.parent != None:
                 node = node.parent
             else:
                 break
 
-    def playout_policy(self, state: State) -> State:
-        pass
+    def playout_policy(self, state: State, iteration:int) -> State:
+        # pass
         # greedy.history.add(state)
         # action = greedy.play(state, greedy.history)
         # return state.apply_action(action)
 
-        # values = []
-        # actions = state.get_legal_actions()
-
-        # for a in actions:
-        #     values.append(self.heuristic(state.apply_action(a)))
+        values = []
+        actions = state.get_legal_actions()
+        allowed_actions = []
+        for a in actions:
+            next_state = state.apply_action(a)
+            if not next_state.is_draw():
+                allowed_actions.append(a)
+                h = self.heuristic(next_state, state.turn)
+                values.append(h)
         
-        # rand = random.randint(0, sum(values))
-        # # print(values)
+        minVal = min(values)
+        values = [x - minVal + 1 for x in values]
+        if iteration < 300:
+            values = [pow(x, 7) for x in values]
+        else:
+            values = [pow(x, 1) for x in values]
 
-        # for i in range(len(values)):
-        #     rand -= values[i]
-        #     if rand <= 0:
-        #         # print(f"Select index {i}")
-        #         return state.apply_action(actions[i])
+        rand = random.randint(0, sum(values))
+        # print(values)
+
+        for i in range(len(values)):
+            rand -= values[i]
+            if rand <= 0:
+                # print(f"Select index {i}")
+                return state.apply_action(allowed_actions[i])
     
     
-    def heuristic(self, state: State):
+    def heuristic(self, state: State, optimize_for: Owner):
         player1_car, player2_car = state.get_player_cars()
 
-        # Include road
-        player1_roadblocks = 0
-        for road in state.roads:
-            if (not(player1_car.y >= road.from_y() 
-                and player1_car.y <= road.to_y())
-                and player1_car.x <= road.from_x()):
-                
-                player1_roadblocks += road.to_x() - road.from_x() + 1
+        car_block_potential = 90
 
-        player2_roadblocks = 0
-        for road in state.roads:
-            if (not(player2_car.y >= road.from_y() 
-                and player2_car.y <= road.to_y())
-                and player2_car.x >= road.to_x()):
-                
-                player2_roadblocks += road.to_x() - road.from_x() + 1
-        
-        # total amount of horizontal cars (on connected path) - horizontal cars blocking (on connected path)?
+        if optimize_for == Owner.PLAYER1:
+            player1_roadblocks = 0
+            for road in state.roads:
+                if (not(player1_car.y >= road.from_y() 
+                    and player1_car.y <= road.to_y())
+                    and player1_car.x <= road.from_x()):
+                    
+                    player1_roadblocks += road.to_x() - road.from_x() + 1
 
-        # player1_blocking = 0
-        # for x in range(player1_car.x + 2, 13):
-        #     car = state.car_map.get((x, player1_car.y))
-        #     if car != None:
-        #         if car.direction == Direction.HORIZONTAL:
-        #             # avoid horizontal cars on the same row
-        #             player1_blocking += 50
-        #         player1_blocking += 1
-        
-        # player2_blocking = 0    
-        # for x in range(player2_car.x - 1, 0, -1):
-        #     car = state.car_map.get((x, player2_car.y))
-        #     if car != None:
-        #         if car.direction == Direction.HORIZONTAL:
-        #             # avoid horizontal cars on the same row
-        #             player2_blocking += 10
-        #         player2_blocking += 1
-
-        #player1_score = - player1_blocking - player1_roadblocks + abs(player1_car.x - 0) * 20
-        #player2_score = - player2_blocking - player2_roadblocks + abs(player2_car.x - 12) * 20
-
-        # if self.owner == Owner.PLAYER1:
-        #     return 20 * (13 - player1_car.x) + player1_roadblocks
-        # else:
-        #     return 20 * player2_car.x + player2_roadblocks
-
-        if state.turn == Owner.PLAYER1:
-            return 20 * player1_car.x #+ 14 - player1_roadblocks
+            player1_blocking = 0
+            distance = 10
+            for x in range(player1_car.x + 2, min(13, player1_car.x + 2 + 5)):
+                distance -= 2
+                car = state.car_map.get((x, player1_car.y))
+                if car != None:
+                    if car.direction == Direction.HORIZONTAL:
+                        # avoid horizontal cars on the same row
+                        player1_blocking += distance * 2
+                    player1_blocking += distance
+            return 20 * player1_car.x + 0.5 * (car_block_potential - player1_blocking) + 9 - player1_roadblocks
         else:
-            return 20 * abs(player2_car.x - 13) #+ 14 - player2_roadblocks
+            player2_roadblocks = 0
+            for road in state.roads:
+                if (not(player2_car.y >= road.from_y() 
+                    and player2_car.y <= road.to_y())
+                    and player2_car.x >= road.to_x()):
+                    
+                    player2_roadblocks += road.to_x() - road.from_x() + 1
+            player2_blocking = 0    
+            distance = 10
+            for x in range(player2_car.x - 1, max(0, player2_car.x - 1 - 5), -1):
+                distance -= 2
+                car = state.car_map.get((x, player2_car.y))
+                if car != None:
+                    if car.direction == Direction.HORIZONTAL:
+                        # avoid horizontal cars on the same row
+                        player2_blocking += distance * 2
+                    player2_blocking += distance
+            return 20 * abs(player2_car.x - 13) + 0.5 * (car_block_potential - player2_blocking) + 9 - player2_roadblocks
