@@ -1,7 +1,4 @@
 import os
-from greedy_player import GreedyPlayer
-
-from iterativ_deepening_player import IterativeDeepeningPlayer
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 from time import sleep
@@ -11,6 +8,9 @@ from state import *
 from player import *
 from human_player import HumanPlayer
 from minimax_player import MinimaxPlayer
+from greedy_player import GreedyPlayer
+from iterativ_deepening_player import IterativeDeepeningPlayer
+from monte_carlo_player import MonteCarloPlayer
 from loader import load_maps
 from ui import *
 
@@ -45,7 +45,7 @@ def new_game(initial_state: State, player1: Player, player2: Player):
 def main():
     pygame.init()
     map_options, maps = map(list, zip(*load_maps()))
-    players = [HumanPlayer, AIPlayer, MinimaxPlayer, IterativeDeepeningPlayer, GreedyPlayer]
+    players = [HumanPlayer, AIPlayer, MinimaxPlayer, IterativeDeepeningPlayer, MonteCarloPlayer, GreedyPlayer]
     new_game(maps[0], players[0](), players[3]())
     pygame.quit()
 

@@ -108,7 +108,7 @@ class HumanPlayer(Player):
                 exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.current_shift != None:
+                if self.current_shift != None and self.current_shift.y_delta != 0:
                     self.action = Action(self.current_shift, [])
                     self.moves_remaining = 0
                 else:

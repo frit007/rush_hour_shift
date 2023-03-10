@@ -134,13 +134,15 @@ class State:
         return player1_car, player2_car
 
     def get_legal_actions(self) -> list[Action]:
-        actions = [Action(shift, []) for shift in self.all_shifts()]
+        actions = []
         
         # allow moving any NEUTRAL or PLAYER car
         for car in self.cars:
             if car.car.owner == self.turn or car.car.owner == Owner.NEUTRAL:
                 for move in self.car_moves(car, 3):
                     actions.append(Action(None, [move]))
+
+        actions = [*actions, *[Action(shift, []) for shift in self.all_shifts()]]
 
         return actions
 
