@@ -1,26 +1,26 @@
+from ui import *
+from loader import load_maps
+from beam_player import BeamPlayer
+from monte_carlo_player import MonteCarloPlayer
+from iterativ_deepening_player import IterativeDeepeningPlayer
+from greedy_player import GreedyPlayer
+from minimax_player import MinimaxPlayer
+from human_player import HumanPlayer
+from player import *
+from state import *
+from type import *
+from tkinter import ttk
+from tkinter import *
+from time import sleep
+import pygame
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
-import pygame
-from time import sleep
-from tkinter import *
-from tkinter import ttk
-
-from type import *
-from state import *
-from player import *
-from human_player import HumanPlayer
-from minimax_player import MinimaxPlayer
-from greedy_player import GreedyPlayer
-from iterativ_deepening_player import IterativeDeepeningPlayer
-from monte_carlo_player import MonteCarloPlayer
-from loader import load_maps
-from ui import *
 
 
 SCREEN_SIZE = (600, 600)
 FONT = 'Roboto'
 
-#TODO: Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
+# TODO: Cards based on # https://www.ultraboardgames.com/rush-hour-shift/game-rules.php
 cards = [
     Card(4, False, 0),
     Card(3, False, 0),
@@ -28,6 +28,7 @@ cards = [
     Card(0, True, 0),
     Card(2, False, 1)
 ]
+
 
 def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
     root.withdraw()
@@ -44,14 +45,13 @@ def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
         action = players[turn].play(current_state, history)
         history.add(current_state)
         current_state = current_state.apply_action(action)
-        turn = (turn + 1) % 2 # switch players
+        turn = (turn + 1) % 2  # switch players
         draw_state(current_state)
         pygame.display.flip()
         moves += 1
         sleep(0.4)
 
-    
-    if(current_state.get_winner() == Owner.PLAYER1):
+    if (current_state.get_winner() == Owner.PLAYER1):
         print(f"Player 1 won in {moves} moves")
     else:
         print(f"Player 2 won in {moves} moves")
@@ -62,16 +62,18 @@ def new_game(root: Tk, initial_state: State, player1: Player, player2: Player):
     #         if event.type == pygame.QUIT:
     #             running = False
 
-    #         if (event.type == pygame.KEYDOWN 
+    #         if (event.type == pygame.KEYDOWN
     #             and event.key == pygame.K_ESCAPE):
     #             running = False
-    
+
     pygame.display.quit()
     root.deiconify()
 
+
 def init_main_screen(root):
     map_options, maps = map(list, zip(*load_maps()))
-    players = [HumanPlayer, AIPlayer, MinimaxPlayer, IterativeDeepeningPlayer, MonteCarloPlayer, GreedyPlayer]
+    players = [HumanPlayer, AIPlayer, MinimaxPlayer,
+               IterativeDeepeningPlayer, MonteCarloPlayer, GreedyPlayer, BeamPlayer]
     player_options = [player.name for player in players]
 
     root.title(NAME)
@@ -84,7 +86,8 @@ def init_main_screen(root):
     style.configure('TLabel', background=MAIN_BG_COLOR, foreground=FONT_COLOR)
 
     content = ttk.Frame(root)
-    frame = ttk.Frame(content, padding=10, width=SCREEN_SIZE[0], height=SCREEN_SIZE[1])
+    frame = ttk.Frame(content, padding=10,
+                      width=SCREEN_SIZE[0], height=SCREEN_SIZE[1])
     title = ttk.Label(content, text=NAME, font=(FONT + ' Bold', 30))
 
     map_text = ttk.Label(content, text='Pick a map:', font=(FONT, 20))
@@ -93,16 +96,20 @@ def init_main_screen(root):
 
     player_text = ttk.Label(content, text='Select Players:', font=(FONT, 20))
     player1_text = ttk.Label(content, text='Player 1:', font=(FONT, 20))
-    player1_drop = ttk.Combobox(content, state='readonly', values=player_options)
+    player1_drop = ttk.Combobox(
+        content, state='readonly', values=player_options)
     player1_drop.current(0)
 
     player2_text = ttk.Label(content, text='Player 2:', font=(FONT, 20))
-    player2_drop = ttk.Combobox(content, state='readonly', values=player_options)
+    player2_drop = ttk.Combobox(
+        content, state='readonly', values=player_options)
     player2_drop.current(0)
 
-    start_btn = ttk.Button(content, text='Start', command=lambda: new_game(root, 
-                                                                           maps[map_drop.current()], 
-                                                                           players[player1_drop.current()](), 
+    start_btn = ttk.Button(content, text='Start', command=lambda: new_game(root,
+                                                                           maps[map_drop.current(
+                                                                           )],
+                                                                           players[player1_drop.current()](
+                                                                           ),
                                                                            players[player2_drop.current()]()))
     quit_btn = ttk.Button(content, text='Quit', command=root.destroy)
 
@@ -119,6 +126,7 @@ def init_main_screen(root):
     quit_btn.grid(column=2, row=13, columnspan=2)
     start_btn.grid(column=4, row=13, columnspan=2)
 
+
 def main():
     pygame.init()
     root = Tk()
@@ -126,24 +134,25 @@ def main():
     root.mainloop()
     pygame.quit()
 
+
 if __name__ == "__main__":
     main()
 
 # Optimizing for minimal state size(We are going to have a lot of states, this is probably required if we do A* or similar)
-# 
+#
 # # Attributes store everything that doesn't change between states
 # CarAttributes = {"image": Image, carLength: int, "direction": VERTICAL/HORIZONTAL, "owner": PLAYER1/PLAYER2/NEUTRAL}
 # fromY and toY don't include the yOffset
 # RoadAttributes = {"fromX": int, "toX": int, "fromY": int, "toY": int}
 #
 # Card: {
-#   "move": int, 
+#   "move": int,
 #   "isSlideX": bool, # move a car x fields forwards
 #   "moveRoads":int # How many roads can they move
 # }
 # cards: card[]
 #
-# 
+#
 # state = {
 #     # Cars could be sorted by x, that way we only have to search part of the cars array to check collisions. This would let us binary search for all cars on a road.
 #     # Since we only need to reorder the array when positions are shifted, sorting should be fast, since we likely only need 2-4 swaps until the array is sorted again
@@ -158,14 +167,14 @@ if __name__ == "__main__":
 #
 #
 #
-# 
+#
 # If we use DFS, we have more flexibility to use more memory to allow faster movement checks
 # This is because we rarely copy a state, instead, we move or undo moves.
 #
 # Road = {"fromX": int, "toX": int, "fromY": int, "toY": int, "yOffset": int}
 # Cars = {"image": Image, carLength: int, "direction": VERTICAL/HORIZONTAL, "owner": PLAYER1/PLAYER2/NEUTRAL, "positions"=[(x:int,y:int)], road: Road}
 # state = {
-#   # O(1) lookup for collision checks, but moving a car, requires updating 
+#   # O(1) lookup for collision checks, but moving a car, requires updating
 #   "fields":Dictionary<(int, int), Car>
 #   "cars": Dictionary<int, Car>
 #   "roads": List<road>
