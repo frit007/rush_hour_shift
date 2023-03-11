@@ -60,8 +60,8 @@ def followTrail(lines : list[str], i : int, x : int, y : int,
 
 
 def read_map(lines : list[str]) -> State:
-    cars = []
-    roads = []
+    cars: list[CarState] = []
+    roads: list[RoadState] = []
     car_id = 0
     for i in range(len(lines)):
         lines[i] = list(lines[i].replace("\n",""))
@@ -109,15 +109,15 @@ def read_map(lines : list[str]) -> State:
 
             x += 1
 
-    map = State(roads, cars, Owner.PLAYER1, [])
-    map.generate_map()
+    map = Map(State(roads, cars, Owner.PLAYER1, []), x - 1, 0, roads[0].width() + roads[1].width())
+    map.initial_state.generate_map()
     return map
 
-def parse_number(name: str):
+def parse_number(name: str) -> int:
     digits = ''.join(ch for ch in name if ch in string.digits)
     return int(digits)
 
-def load_maps() -> list[State]:
+def load_maps() -> list[tuple[str, Map]]:
     map_dir = os.path.join(dir, 'data/maps')
     map_files = sorted(os.listdir(map_dir), key = parse_number)
     maps = []
