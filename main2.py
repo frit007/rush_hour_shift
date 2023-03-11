@@ -9,6 +9,7 @@ from players.random_player import Random
 from players.minimax_player import MinimaxPlayer
 from players.greedy_player import GreedyPlayer
 from players.iterative_deepening_player import IterativeDeepeningPlayer
+from players.iterative_deepening_with_history import IterativeDeepeningPlayerWithHistory
 from players.beam_player import BeamPlayer
 from players.monte_carlo_player import MonteCarloPlayer
 
@@ -16,7 +17,8 @@ def main():
     pygame.init()
     map_options, maps = map(list, zip(*load_maps()))
     players = [HumanPlayer, Random, MinimaxPlayer, BeamPlayer,
-               IterativeDeepeningPlayer, MonteCarloPlayer, GreedyPlayer]
+               IterativeDeepeningPlayer, IterativeDeepeningPlayerWithHistory,
+               MonteCarloPlayer, GreedyPlayer]
     new_game(maps[0], players[2](), players[0]())
     pygame.quit()
 
