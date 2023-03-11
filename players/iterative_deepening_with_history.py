@@ -1,9 +1,8 @@
 import math
 from time import sleep
-import time
 from players.player import Player
-from state import Map, State
-from type import Action, Car, Direction, Owner
+from logic.state import Map, State
+from logic.type import Action, Car, Direction, Owner
 import pygame
 
 from ui.game import draw_state
