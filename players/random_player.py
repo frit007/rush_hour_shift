@@ -1,8 +1,8 @@
 import random
 
 from players.player import *
-from state import State
-from type import Action, Owner
+from logic.state import State
+from logic.type import Action, Owner
 
 class Random(Player):
     name = "Random player"

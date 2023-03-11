@@ -2,8 +2,8 @@ import pygame
 from time import sleep
 import math
 
-from state import State, Map
-from type import Action, Owner, Car
+from logic.state import State, Map
+from logic.type import Action, Owner, Car
 from players.player import *
 from ui.game import draw_state
 

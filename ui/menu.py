@@ -2,9 +2,9 @@ from tkinter import *
 from tkinter import ttk
 
 from players.player import *
-from state import State, Map
+from logic.state import State, Map
 from ui.game import NAME, SCREEN_SIZE, MAIN_BG_COLOR, FONT_COLOR, FONT
-from game import new_game
+from logic.game import new_game
 
 def main_game(root: Tk, initial_state: State, player1: Player, player2: Player):
     root.withdraw()

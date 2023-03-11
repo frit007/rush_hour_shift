@@ -3,8 +3,8 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 from time import sleep
 
-from type import *
-from state import *
+from logic.type import *
+from logic.state import *
 from ui.game import *
 from players.player import *
 

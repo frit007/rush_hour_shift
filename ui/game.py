@@ -4,8 +4,8 @@ from enum import Enum
 import math
 import os
 
-from state import CarState, RoadState, State
-from type import *
+from logic.state import CarState, RoadState, State
+from logic.type import *
 from players.player import *
 
 MAIN_BG_COLOR = '#C5E0DB'

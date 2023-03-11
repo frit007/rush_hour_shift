@@ -1,5 +1,5 @@
-from state import State
-from type import Action
+from logic.state import State
+from logic.type import Action
 from ui.game import *
 from players.player import *
 

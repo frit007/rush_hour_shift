@@ -2,7 +2,7 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 
-from loader import load_maps
+from logic.loader import load_maps
 from ui.menu import *
 from players.human_player import HumanPlayer
 from players.random_player import Random

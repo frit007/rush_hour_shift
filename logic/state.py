@@ -1,7 +1,7 @@
 from __future__ import annotations
 import copy 
 
-from type import *
+from logic.type import *
 
 class RoadState:
     road: Road

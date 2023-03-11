@@ -1,7 +1,7 @@
 import math
 
-from state import State
-from type import Action, Owner, Car
+from logic.state import State
+from logic.type import Action, Owner, Car
 from players.player import *
 
 DEPTH_LIMIT = 3

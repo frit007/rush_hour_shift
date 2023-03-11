@@ -1,5 +1,5 @@
-from state import State, Map
-from type import Owner, Direction
+from logic.state import State, Map
+from logic.type import Owner, Direction
 
 class Player:
     name: str

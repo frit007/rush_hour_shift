@@ -3,8 +3,8 @@ import time
 import random
 import math
 
-from state import State
-from type import Action, Owner
+from logic.state import State
+from logic.type import Action, Owner
 from players.player import *
 
 class Node:

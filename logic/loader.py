@@ -3,15 +3,15 @@ import string
 import random
 import pygame
 
-from state import *
-from type import *
+from logic.state import *
+from logic.type import *
 from ui.game import TILE_SIZE
 
 dir = os.path.split(os.path.realpath(__file__))[0]
 
 ## Images ##
 
-img_dir = os.path.join(dir, 'data/images')
+img_dir = os.path.join(dir, '../data/images')
 
 def load_image(name: str, width: int, height: int) -> pygame.image:
     img = pygame.image.load(os.path.join(img_dir, name))
@@ -109,7 +109,7 @@ def read_map(lines : list[str]) -> State:
 
             x += 1
 
-    map = Map(State(roads, cars, Owner.PLAYER1, []), x - 1, 0, roads[0].width() + roads[1].width())
+    map = Map(State(roads, cars, Owner.PLAYER1, []), x - 2, 0, roads[0].width() + roads[1].width())
     map.initial_state.generate_map()
     return map
 
@@ -118,7 +118,7 @@ def parse_number(name: str) -> int:
     return int(digits)
 
 def load_maps() -> list[tuple[str, Map]]:
-    map_dir = os.path.join(dir, 'data/maps')
+    map_dir = os.path.join(dir, '../data/maps')
     map_files = sorted(os.listdir(map_dir), key = parse_number)
     maps = []
 
