@@ -1,19 +1,21 @@
 from dataclasses import dataclass
 import pygame
-from state import CarState, RoadState, State
-from type import *
 from enum import Enum
 import math
 import os
 
-# Define the background colour
-# using RGB color coding.
+from state import CarState, RoadState, State
+from type import *
+from players.player import *
+
 MAIN_BG_COLOR = '#C5E0DB'
 GAME_BG_COLOR = pygame.Color(MAIN_BG_COLOR)
+FONT = 'Roboto'
 FONT_COLOR = '#313131'
 
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
+SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 TILE_SIZE = 30
 NAME = 'Rush Hour Shift'
@@ -222,12 +224,4 @@ def draw_car_movement_options(positions:list[MoveAndPosition], draw_offset: tupl
                 (1,1),
                 pygame.Color(0,255,0,255),
                 draw_offset
-            )
-
-
-
-
-
-
-
-
+        )

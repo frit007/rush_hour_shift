@@ -1,9 +1,9 @@
 import pygame
-from player import Player
 
+from players.player import *
 from state import *
 from type import Action, Owner
-from ui import *
+from ui.game import *
 
 class HumanPlayer(Player):
 
@@ -18,7 +18,7 @@ class HumanPlayer(Player):
     current_shift: Shift
 
 
-    def play(self, state: State, history: set[State]) -> Action:
+    def play(self, state: State, map: Map, history: set[State]) -> Action:
 
         self.original_state = state
         self.current_state = state

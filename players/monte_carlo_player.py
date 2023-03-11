@@ -4,9 +4,8 @@ import random
 import math
 
 from state import State
-from type import Action, Direction, Owner
-from ui import *
-from player import Player, AIPlayer
+from type import Action, Owner
+from players.player import *
 
 class Node:
     parent: Node
@@ -48,10 +47,12 @@ class Node:
 class MonteCarloPlayer(Player):
     name = "Monte Carlo Player"
     owner: Owner
+    map: Map
 
-    def play(self, state: State, history: set[State]) -> Action:
+    def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history
         self.owner = state.turn
+        self.map = map
         tree = Node(None, [], None, state)
         return self.monte_carlo_tree_search(tree, 300)
 
@@ -115,7 +116,7 @@ class MonteCarloPlayer(Player):
         counter = 0
         # history = self.history.copy()
     
-        while current_state.get_winner() == None:
+        while current_state.get_winner(self.map) == None:
             counter += 1
             # if random.randrange(0,100) > 80:
             #     action = rand.play(current_state, greedy.history)
@@ -127,7 +128,7 @@ class MonteCarloPlayer(Player):
             # current_state = current_state.apply_action(action)
 
         print("playout moves: " + str(counter), flush=True)
-        return current_state.get_winner()
+        return current_state.get_winner(self.map)
 
     def back_propagate(self, winner: Owner, node: Node) -> State:
         while True:
@@ -175,49 +176,3 @@ class MonteCarloPlayer(Player):
             if rand <= 0:
                 # print(f"Select index {i}")
                 return state.apply_action(allowed_actions[i])
-    
-    
-    def heuristic(self, state: State, optimize_for: Owner):
-        player1_car, player2_car = state.get_player_cars()
-
-        car_block_potential = 90
-
-        if optimize_for == Owner.PLAYER1:
-            player1_roadblocks = 0
-            for road in state.roads:
-                if (not(player1_car.y >= road.from_y() 
-                    and player1_car.y <= road.to_y())
-                    and player1_car.x <= road.from_x()):
-                    
-                    player1_roadblocks += road.to_x() - road.from_x() + 1
-
-            player1_blocking = 0
-            distance = 10
-            for x in range(player1_car.x + 2, min(13, player1_car.x + 2 + 5)):
-                distance -= 2
-                car = state.car_map.get((x, player1_car.y))
-                if car != None:
-                    if car.direction == Direction.HORIZONTAL:
-                        # avoid horizontal cars on the same row
-                        player1_blocking += distance * 2
-                    player1_blocking += distance
-            return 20 * player1_car.x + 0.5 * (car_block_potential - player1_blocking) + 9 - player1_roadblocks
-        else:
-            player2_roadblocks = 0
-            for road in state.roads:
-                if (not(player2_car.y >= road.from_y() 
-                    and player2_car.y <= road.to_y())
-                    and player2_car.x >= road.to_x()):
-                    
-                    player2_roadblocks += road.to_x() - road.from_x() + 1
-            player2_blocking = 0    
-            distance = 10
-            for x in range(player2_car.x - 1, max(0, player2_car.x - 1 - 5), -1):
-                distance -= 2
-                car = state.car_map.get((x, player2_car.y))
-                if car != None:
-                    if car.direction == Direction.HORIZONTAL:
-                        # avoid horizontal cars on the same row
-                        player2_blocking += distance * 2
-                    player2_blocking += distance
-            return 20 * abs(player2_car.x - 13) + 0.5 * (car_block_potential - player2_blocking) + 9 - player2_roadblocks

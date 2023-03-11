@@ -2,5 +2,12 @@
 
 ```sh
 pip install pygame
-python game.py
+python main.py
+```
+
+without tkinter
+
+```sh
+pip install pygame
+python main2.py
 ```

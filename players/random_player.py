@@ -1,20 +1,13 @@
 import random
-import time
-import pygame
 
-from state import CarState, RoadState, State
+from players.player import *
+from state import State
 from type import Action, Owner
-from ui import *
 
-class Player:
-    name: str
-    def play(self, state, history: set[State]):
-        pass
-
-class AIPlayer(Player):
+class Random(Player):
     name = "Random player"
     # random AI(currently cheats by moving your car)
-    def play(self, state: State, history: set[State]):
+    def play(self, state: State, map: Map, history: set[State]):
         shifts = state.all_shifts()
         shift = None
         if len(shifts) > 0:
@@ -34,11 +27,3 @@ class AIPlayer(Player):
                     played_moves.append(move)
                 
         return Action(shift, played_moves)
-    
-    def heuristic():
-        # Heuristic should probably be moved to ai player, since each AI is free to choose their own heuristic
-        # Calculate a heuristic for this field, this could include
-        # - distance of to the goal
-        # - cars blocking the cars
-        pass
-    

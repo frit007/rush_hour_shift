@@ -1,5 +1,7 @@
-from type import *
+from __future__ import annotations
 import copy 
+
+from type import *
 
 class RoadState:
     road: Road
@@ -21,6 +23,9 @@ class RoadState:
     
     def to_y(self):
         return self.road.to_y + self.y_offset
+    
+    def width(self):
+        return self.road.to_x - self.road.from_x + 1
 
 class CarState:
     x: int
@@ -40,7 +45,7 @@ class CarState:
         else:
             return x == self.x and y >= self.y and y < self.y + self.car.car_length
 
-# @dataclass(frozen=True, slots=True)
+@dataclass(slots=True)
 class State:
     roads: list[RoadState]
     cars: list[CarState]
@@ -149,12 +154,12 @@ class State:
     # slight rule change, 
     # the player when they reach the end of the board, 
     # not when they have driven over the edge
-    def get_winner(self):
+    def get_winner(self, map: Map):
         player1_car, player2_car = self.get_player_cars()
 
-        if player1_car.x == 12:
+        if player1_car.x == map.player1_goal:
             return Owner.PLAYER1
-        elif player2_car.x == 0:
+        elif player2_car.x == map.player2_goal:
             return Owner.PLAYER2
         else:
             return None
@@ -277,3 +282,10 @@ def copyState(state:State) -> State:
     # create a somewhat shallow copy of the state, Cars and roads should not be recreated but RoadState and CarState might have to be recreated.
     # Otherwise reference existing RoadState and CarState unless they have changed in someway(This might be too annoying to deal with)
     return new_state
+
+@dataclass(frozen=True, slots=True)
+class Map:
+    initial_state: State
+    player1_goal: int
+    player2_goal: int
+    potential_roadblocks: int
