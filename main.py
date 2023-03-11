@@ -1,5 +1,6 @@
 import os
 
+
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 
@@ -13,6 +14,7 @@ from players.iterative_deepening_player import IterativeDeepeningPlayer
 from players.iterative_deepening_with_history import IterativeDeepeningPlayerWithHistory
 from players.beam_player import BeamPlayer
 from players.monte_carlo_player import MonteCarloPlayer
+from players.monte_carlo_player_processed import MonteCarloPlayerProcessed
 
 def main():
     pygame.init()
@@ -20,7 +22,7 @@ def main():
     game_maps = load_maps()
     players = [HumanPlayer, Random, MinimaxPlayer, BeamPlayer,
                IterativeDeepeningPlayer, IterativeDeepeningPlayerWithHistory,
-               MonteCarloPlayer, GreedyPlayer]
+               MonteCarloPlayer, MonteCarloPlayerProcessed, GreedyPlayer]
     init_main_screen(root, game_maps, players)
     root.mainloop()
     pygame.quit()

@@ -52,14 +52,12 @@ class State:
     turn: Owner
     # Don't store the actual cards, instead store how many of each card is still available in the deck
     # the index in the array corresponds to 
-    cards: list[int]
     car_map: dict[(int,int), Car]
     
-    def __init__(self, roads: list[RoadState], cars: list[CarState], turn: Owner, cards: list[int]) -> None:
+    def __init__(self, roads: list[RoadState], cars: list[CarState], turn: Owner) -> None:
         self.roads = roads
         self.cars = cars
         self.turn = turn
-        self.cards = cards
         # Create a car map
 
     def generate_map(self):
@@ -70,7 +68,7 @@ class State:
                 self.car_map[(car_state.x + delta[0] * i, car_state.y + delta[1] * i)] = car_state.car
 
     def __repr__(self):
-        return f"State: roads: {self.roads} cars: {self.cars} turn: {self.turn} cards: {self.cards}\n"
+        return f"State: roads: {self.roads} cars: {self.cars} turn: {self.turn}\n"
     
     def switch_turn(self):
         if self.turn == Owner.PLAYER1:
@@ -109,7 +107,7 @@ class State:
         cars = [(car_state.car.id, car_state.x, car_state.y) for car_state in self.cars]
         cars.sort()
         road = [road_state.y_offset for road_state in self.roads]
-        return (tuple(cars), tuple(road), self.turn, tuple(self.cards))
+        return (tuple(cars), tuple(road), self.turn)
 
     def __hash__(self):
         return hash(self.minimized_state())
@@ -278,13 +276,39 @@ class State:
 
 # Note: this is not declared as a member functions, due to typing limitations
 def copyState(state:State) -> State:
-    new_state = State(copy.copy(state.roads), copy.copy(state.cars), state.turn, copy.copy(state.cards))
+    new_state = State(copy.copy(state.roads), copy.copy(state.cars), state.turn)
     # create a somewhat shallow copy of the state, Cars and roads should not be recreated but RoadState and CarState might have to be recreated.
     # Otherwise reference existing RoadState and CarState unless they have changed in someway(This might be too annoying to deal with)
     return new_state
 
+
+def reconstruct_from_minimal_state_and_map(map:Map, minimized_state):
+    # minimized format (the list are actually tuples)
+    # (cars: list[tuple(id, x,y)], road_yoffset: list[int], turn: Owner)
+    car_info = {}
+    for info in minimized_state[0]:
+        car_info[info[0]] = info
+    # print(car_info)
+    cars = []
+    # print(map.initial_state.cars)
+    for c in map.initial_state.cars:
+        cars.append(CarState(car_info[c.car.id][1],car_info[c.car.id][2],c.car))
+    # print(cars)
+    roads = []
+    for i in range(len(map.initial_state.roads)):
+        road = map.initial_state.roads[i]
+        roads.append(RoadState(minimized_state[1][i], road.road))
+    state= State(roads, cars, minimized_state[2])
+    state.generate_map()
+    # print()
+    # # print(f"previous {minimized_state}")
+    # print(f"minimized {state.minimized_state() == minimized_state}")
+    # print()
+    return state
+
 @dataclass(frozen=True, slots=True)
 class Map:
+    map_id: int
     initial_state: State
     player1_goal: int
     player2_goal: int
