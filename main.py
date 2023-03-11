@@ -9,13 +9,14 @@ from random_player import Random
 from minimax_player import MinimaxPlayer
 from greedy_player import GreedyPlayer
 from iterativ_deepening_player import IterativeDeepeningPlayer
+from beam_player import BeamPlayer
 from monte_carlo_player import MonteCarloPlayer
 
 def main():
     pygame.init()
     root = Tk()
     game_maps = load_maps()
-    players = [HumanPlayer, Random, MinimaxPlayer, 
+    players = [HumanPlayer, Random, MinimaxPlayer, BeamPlayer,
                IterativeDeepeningPlayer, MonteCarloPlayer, GreedyPlayer]
     init_main_screen(root, game_maps, players)
     root.mainloop()

@@ -9,14 +9,15 @@ from random_player import Random
 from minimax_player import MinimaxPlayer
 from greedy_player import GreedyPlayer
 from iterativ_deepening_player import IterativeDeepeningPlayer
+from beam_player import BeamPlayer
 from monte_carlo_player import MonteCarloPlayer
 
 def main():
     pygame.init()
     map_options, maps = map(list, zip(*load_maps()))
-    players = [HumanPlayer, Random, MinimaxPlayer, 
+    players = [HumanPlayer, Random, MinimaxPlayer, BeamPlayer,
                IterativeDeepeningPlayer, MonteCarloPlayer, GreedyPlayer]
-    new_game(maps[0], players[0], players[0])
+    new_game(maps[0], players[2](), players[0]())
     pygame.quit()
 
 if __name__ == "__main__":
