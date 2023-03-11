@@ -1,6 +1,6 @@
 import random
 
-from player import *
+from players.player import *
 from state import State
 from type import Action, Owner
 

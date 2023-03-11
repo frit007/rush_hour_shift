@@ -5,7 +5,7 @@ import math
 
 from state import State
 from type import Action, Owner
-from player import *
+from players.player import *
 
 class Node:
     parent: Node
@@ -116,7 +116,7 @@ class MonteCarloPlayer(Player):
         counter = 0
         # history = self.history.copy()
     
-        while current_state.get_winner() == None:
+        while current_state.get_winner(self.map) == None:
             counter += 1
             # if random.randrange(0,100) > 80:
             #     action = rand.play(current_state, greedy.history)
@@ -128,7 +128,7 @@ class MonteCarloPlayer(Player):
             # current_state = current_state.apply_action(action)
 
         print("playout moves: " + str(counter), flush=True)
-        return current_state.get_winner()
+        return current_state.get_winner(self.map)
 
     def back_propagate(self, winner: Owner, node: Node) -> State:
         while True:

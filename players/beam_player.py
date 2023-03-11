@@ -1,7 +1,7 @@
 from state import State
 from type import Action
-from ui import *
-from player import *
+from ui.game import *
+from players.player import *
 
 BEAM_WIDTH = 3
 MAX_DEPTH = 5
@@ -40,7 +40,7 @@ class BeamPlayer(Player):
                 sort_number += 1
                 queue.sort(reverse=True)
             num_expanded += len(new_queue)
-            if queue[0][2].get_winner() != None:
+            if queue[0][2].get_winner(self.map) != None:
                 return queue[0][3][0]
 
         print(queue[0][3], num_expanded)

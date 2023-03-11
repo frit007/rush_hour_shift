@@ -1,9 +1,9 @@
 import pygame
 
-from player import *
+from players.player import *
 from state import *
 from type import Action, Owner
-from ui import *
+from ui.game import *
 
 class HumanPlayer(Player):
 

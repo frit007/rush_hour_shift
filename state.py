@@ -1,3 +1,4 @@
+from __future__ import annotations
 import copy 
 
 from type import *
@@ -153,12 +154,12 @@ class State:
     # slight rule change, 
     # the player when they reach the end of the board, 
     # not when they have driven over the edge
-    def get_winner(self):
+    def get_winner(self, map: Map):
         player1_car, player2_car = self.get_player_cars()
 
-        if player1_car.x == 12:
+        if player1_car.x == map.player1_goal:
             return Owner.PLAYER1
-        elif player2_car.x == 0:
+        elif player2_car.x == map.player2_goal:
             return Owner.PLAYER2
         else:
             return None

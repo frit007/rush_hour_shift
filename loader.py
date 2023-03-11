@@ -5,7 +5,7 @@ import pygame
 
 from state import *
 from type import *
-from ui import TILE_SIZE
+from ui.game import TILE_SIZE
 
 dir = os.path.split(os.path.realpath(__file__))[0]
 

@@ -6,7 +6,7 @@ import os
 
 from state import CarState, RoadState, State
 from type import *
-from player import *
+from players.player import *
 
 MAIN_BG_COLOR = '#C5E0DB'
 GAME_BG_COLOR = pygame.Color(MAIN_BG_COLOR)

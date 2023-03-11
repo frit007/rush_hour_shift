@@ -1,9 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 
-from player import *
+from players.player import *
 from state import State, Map
-from ui import NAME, SCREEN_SIZE, MAIN_BG_COLOR, FONT_COLOR, FONT
+from ui.game import NAME, SCREEN_SIZE, MAIN_BG_COLOR, FONT_COLOR, FONT
 from game import new_game
 
 def main_game(root: Tk, initial_state: State, player1: Player, player2: Player):

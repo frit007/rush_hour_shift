@@ -2,17 +2,18 @@ import pygame
 from time import sleep
 import math
 
-from state import State
-from type import Action, Owner, Direction, Car
-from player import *
-from ui import draw_state
+from state import State, Map
+from type import Action, Owner, Car
+from players.player import *
+from ui.game import draw_state
 
 def transposition_key(state:State):
     return state.minimized_state()
-    
-DEPTH_LIMIT = 1
-class GreedyPlayer(Player):
-    name = "Greedy Player"
+
+DEPTH_LIMIT = 5
+
+class IterativeDeepeningPlayer(Player):
+    name = "Iterative Deepening"
     # TODO: Add depth to transpositions, since it is important at which depth a state was analyzed
     transpositions: dict[State, (float, Action, int)]
     history: set[State]
@@ -23,22 +24,22 @@ class GreedyPlayer(Player):
     def __init__(self) -> None:
         super().__init__()
         self.transpositions = {}
-        self.history = set()
 
     def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history
         self.owner = state.turn
         self.map = map
 
-        # print(f"initial heuristic {self.heuristic(state)}")
+
+        print(f"initial heuristic {self.heuristic(state)}")
         for depth_limit in range(1, DEPTH_LIMIT):
             self.depth_limit = depth_limit
             self.__max_value(state, 0, alpha=-math.inf, beta=math.inf, exclude_car="invalid")
         self.depth_limit = DEPTH_LIMIT
         v, move = self.__max_value(state, 0, alpha=-math.inf, beta=math.inf, exclude_car="invalid")
-        # print(f"selected move: {repr(move)} value: {v}")
-        # print(f"final heuristic {self.heuristic(state.apply_action(move))}")
-        # self.explain_path(state)
+        print(f"selected move: {repr(move)} value: {v}")
+        print(f"final heuristic {self.heuristic(state.apply_action(move))}")
+        self.explain_path(state)
         # self.why_not_left(state)
         return move
     
@@ -68,7 +69,7 @@ class GreedyPlayer(Player):
 
     def __max_value(self, state: State, depth: int, alpha:float, beta:float,  exclude_car: Car) -> tuple[float, Action]:
         # print(f"depth {depth}")
-        if state.get_winner() != None:
+        if state.get_winner(self.map) != None:
             return -100000000 + depth, None
         elif state in self.history and depth != 0:
             return math.inf, None
@@ -116,7 +117,7 @@ class GreedyPlayer(Player):
         return v, move
 
     def __min_value(self, state: State, depth: int, alpha: float, beta: float, exclude_car: Car) -> tuple[float, Action]:
-        if state.get_winner() != None:
+        if state.get_winner(self.map) != None:
             return 100000000 - depth, None
         elif state in self.history:
             return -math.inf, None

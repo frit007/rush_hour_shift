@@ -5,7 +5,8 @@ from time import sleep
 
 from type import *
 from state import *
-from ui import *
+from ui.game import *
+from players.player import *
 
 def new_game(map: Map, player1: Player, player2: Player):
     create_window()
@@ -15,7 +16,7 @@ def new_game(map: Map, player1: Player, player2: Player):
     history = set()
     moves = 0
 
-    while current_state.get_winner() == None:
+    while current_state.get_winner(map) == None:
         action = players[turn].play(current_state, map, history)
         history.add(current_state)
         current_state = current_state.apply_action(action)
@@ -26,7 +27,7 @@ def new_game(map: Map, player1: Player, player2: Player):
         moves += 1
         sleep(0.4)
     
-    if(current_state.get_winner() == Owner.PLAYER1):
+    if(current_state.get_winner(map) == Owner.PLAYER1):
         print(f"Player 1 won in {moves} moves")
     else:
         print(f"Player 2 won in {moves} moves")

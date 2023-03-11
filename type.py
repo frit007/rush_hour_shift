@@ -59,4 +59,3 @@ class Shift:
 class Action:
     shift: Shift
     moves: list[Move]
-

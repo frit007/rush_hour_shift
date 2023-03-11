@@ -1,8 +1,8 @@
 import math
 
 from state import State
-from type import Action, Owner, Car, Direction
-from player import *
+from type import Action, Owner, Car
+from players.player import *
 
 DEPTH_LIMIT = 3
 class MinimaxPlayer(Player):
@@ -29,7 +29,7 @@ class MinimaxPlayer(Player):
         return move
 
     def __max_value(self, state: State, depth: int, exclude_car: Car) -> tuple[float, Action]:
-        if state.get_winner() != None:
+        if state.get_winner(self.map) != None:
             return -100000000 + depth, None
         elif state in self.history and depth != 0:
             # print("it is in history")
@@ -57,7 +57,7 @@ class MinimaxPlayer(Player):
         return v, move
 
     def __min_value(self, state: State, depth: int, exclude_car: Car) -> tuple[float, Action]:
-        if state.get_winner() != None:
+        if state.get_winner(self.map) != None:
             return 100000000 - depth, None
         elif state in self.history:
             # print("(MIN)it is in history")
