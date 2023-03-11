@@ -83,11 +83,29 @@ def draw_roads(roads: list[RoadState], draw_offset: tuple[int, int]):
     for road in roads:
         draw_road(road.road, (draw_offset[0], draw_offset[1] + road.y_offset))
 
+def draw_car_ids(state: State, draw_offset: tuple[int, int]):
+    font = pygame.font.Font(None, 32)
+    for car_state in state.cars:
+        text = font.render(str(car_state.car.id), True, (0,255,0), None)
+        textRect = text.get_rect()
+        textRect.center = ((car_state.x + draw_offset[0] + 0.5) * TILE_SIZE, (car_state.y + draw_offset[1] + 0.5) * TILE_SIZE)
+        screen.blit(text, textRect)
+
+def draw_car_positions(state: State, draw_offset: tuple[int, int]):
+    font = pygame.font.Font(None, 16)
+    for car_state in state.cars:
+        text = font.render(f"({car_state.x},{car_state.y})", True, (0,255,0), None)
+        textRect = text.get_rect()
+        textRect.center = ((car_state.x + draw_offset[0] + 0.5) * TILE_SIZE, (car_state.y + draw_offset[1] + 0.5) * TILE_SIZE)
+        screen.blit(text, textRect)
+
 def draw_state(state: State):
     screen.fill(GAME_BG_COLOR)
     draw_offset = calculate_draw_offset(state.roads)
     draw_roads(state.roads, draw_offset)
     draw_cars(state.cars, draw_offset)
+    # draw_car_ids(state, draw_offset)
+    # draw_car_positions(state, draw_offset)
     highlight_turn_car(state, draw_offset)
     return draw_offset
 
