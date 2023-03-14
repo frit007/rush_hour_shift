@@ -16,10 +16,11 @@ class HumanPlayer(Player):
     original_state: State
     current_state: State
     current_shift: Shift
+    history: set[State]
 
 
     def play(self, state: State, map: Map, history: set[State]) -> Action:
-
+        self.history = history
         self.original_state = state
         self.current_state = state
         self.shifts_remaining = 1
@@ -42,10 +43,11 @@ class HumanPlayer(Player):
     def __move_selected_car(self):
         draw_offset = draw_state(self.current_state, self.map)
         paint_highlight_rect(self.selected_car.rect, pygame.Color(0,0,255,255))
-
+        legal_actions = self.original_state.get_legal_actions()
         # Highlight moves
         # car_state = self.current_state.find_car_state(self.selected_car)
         moves = self.current_state.car_moves(self.selected_car.target, self.moves_remaining)
+        moves = [move for move in moves if Action(None, [move]) in legal_actions]
         move_and_positions = translate_move_to_position(self.selected_car.target, moves)
         draw_car_movement_options(move_and_positions, draw_offset)
 
@@ -59,14 +61,14 @@ class HumanPlayer(Player):
                     if element.type == CollisionType.SQUARE:
                        moves = [x.move for x in move_and_positions if x.position == element.grid_pos]
                        if len(moves) > 0:
-                           # The player made a legal move
-                           self.current_state = self.current_state.apply_action(Action(None, moves), False)
-                        #    self.moves_remaining -= moves[0].magnitude()
-                           self.moves_remaining = 0
-                           # Once you move a car you can no longer move a road
-                           self.shifts_remaining = 0
-                           # update action so we can update the state once the player has done their turn
-                           self.action = Action(self.action.shift, self.action.moves + moves)
+                            # The player made a legal move
+                            self.current_state = self.current_state.apply_action(Action(None, moves), False)
+                            # self.moves_remaining -= moves[0].magnitude()
+                            self.moves_remaining = 0
+                            # Once you move a car you can no longer move a road
+                            self.shifts_remaining = 0
+                            # update action so we can update the state once the player has done their turn
+                            self.action = Action(self.action.shift, self.action.moves + moves)
 
                 # if they clicked nothing deselect the car
                 self.selected_car = None
@@ -75,7 +77,8 @@ class HumanPlayer(Player):
 
     def __shift_selected_road(self):
         shifts = self.original_state.all_shifts()
-        relevant_shifts = [shift for shift in shifts if shift.road == self.selected_road.target.road]
+        legal_moves = self.original_state.get_legal_actions()
+        relevant_shifts = [shift for shift in shifts if shift.road == self.selected_road.target.road and Action(shift, []) in legal_moves]
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
         

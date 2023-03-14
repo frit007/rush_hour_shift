@@ -150,7 +150,7 @@ class State:
         return actions
 
     # slight rule change, 
-    # the player when they reach the end of the board, 
+    # the player wins when they reach the end of the board, 
     # not when they have driven over the edge
     def get_winner(self, map: Map):
         player1_car, player2_car = self.get_player_cars()

@@ -30,7 +30,7 @@ def new_game(map: Map, player1: Player, player2: Player):
         moves += 1
         sleep(0.4)
     
-    if(current_state.get_winner(map) == Owner.PLAYER1):
+    if current_state.get_winner(map) == Owner.PLAYER1:
         print(f"Player 1 won in {moves} moves")
     else:
         print(f"Player 2 won in {moves} moves")
