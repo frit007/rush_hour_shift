@@ -15,7 +15,6 @@ class GreedyPlayer(Player):
 
     def __init__(self) -> None:
         super().__init__()
-        self.transpositions = {}
         self.history = set()
 
     def play(self, state: State, map: Map, history: set[State]) -> Action:

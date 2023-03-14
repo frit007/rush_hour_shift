@@ -13,15 +13,13 @@ class Node:
     playouts: int
     wins: int
     our_wins: int
-    lead_to: Action
     state: State
-    def __init__(self, parent: Node, children: Node, lead_to: Action, state: State) -> None:
+    def __init__(self, parent: Node, children: Node, state: State) -> None:
         self.parent = parent
         self.playouts = 0
         self.wins = 0
         self.our_wins = 0
         self.children = children
-        self.lead_to = lead_to
         self.state = state
         
     def addChild(self, child: Node) -> None:
@@ -40,9 +38,9 @@ class Node:
 
     def __repr__(self):
         if(self.depth() < 2): 
-            return f"Node: player: {self.state.turn} playouts: {self.playouts} depth: {self.depth()} wins: {self.wins} our_wins {self.our_wins} action: {self.lead_to} children: {self.children}\n"
+            return f"Node: player: {self.state.turn} playouts: {self.playouts} depth: {self.depth()} wins: {self.wins} our_wins {self.our_wins} action: {self.state.lead_to} children: {self.children}\n"
         else:
-            return f"Node: player: {self.state.turn} playouts: {self.playouts} depth: {self.depth()} wins: {self.wins} our_wins {self.our_wins} action: {self.lead_to} children: __omitted__\n"
+            return f"Node: player: {self.state.turn} playouts: {self.playouts} depth: {self.depth()} wins: {self.wins} our_wins {self.our_wins} action: {self.state.lead_to} children: __omitted__\n"
 
 class MonteCarloPlayer(Player):
     name = "Monte Carlo Player"
@@ -53,7 +51,7 @@ class MonteCarloPlayer(Player):
         self.history = history
         self.owner = state.turn
         self.map = map
-        tree = Node(None, [], None, state)
+        tree = Node(None, [], state)
         return self.monte_carlo_tree_search(tree, 300)
 
     def monte_carlo_tree_search(self, tree: Node, seconds: int) -> Action:
@@ -65,7 +63,7 @@ class MonteCarloPlayer(Player):
             print(f"({counter}) ",end="")
             leaf = self.select(tree) 
             child = self.expand(leaf)
-            result = self.simulate(child)
+            result = self.simulate(child.state)
             self.back_propagate(result, child)
             counter += 1
             end = time.time()
@@ -73,7 +71,7 @@ class MonteCarloPlayer(Player):
         print("loops: " + str(counter))
         print(tree)
         best_child = max(tree.children, key=lambda c: c.playouts)
-        return best_child.lead_to
+        return best_child.state.lead_to
 
     def UCB1(self, node: Node) -> Node:
         if node.playouts == 0:
@@ -103,38 +101,23 @@ class MonteCarloPlayer(Player):
         for a in node.state.get_legal_actions():
             new_state = node.state.apply_action(a)
             if new_state not in self.history:
-                child = Node(node, [], a, new_state)
+                child = Node(node, [], new_state)
                 node.addChild(child)
 
         node.children.sort(key=lambda c: self.heuristic(c.state, self.owner), reverse = True)
         return node.children[0]
 
-    def simulate(self, node: Node) -> State:
-        # greedy = GreedyPlayer()
-        # rand = AIPlayer()
-        current_state = node.state
+    def simulate(self, current_state: State) -> State:
         counter = 0
-        # history = self.history.copy()
-    
         while current_state.get_winner(self.map) == None:
             counter += 1
-            # if random.randrange(0,100) > 80:
-            #     action = rand.play(current_state, greedy.history)
-            # else:
-            #     action = greedy.play(current_state, greedy.history)
             current_state = self.playout_policy(current_state, counter)
-            # history.add(current_state)
-            # greedy.history.add(current_state)
-            # current_state = current_state.apply_action(action)
-
-        print("playout moves: " + str(counter), flush=True)
         return current_state.get_winner(self.map)
 
     def back_propagate(self, winner: Owner, node: Node) -> None:
         while True:
             node.playouts += 1
-            # if node.state.turn == winner:
-            #     node.wins += 1
+
             if node.state.turn != winner:
                 node.wins += 1
             if self.owner == winner:
@@ -146,20 +129,12 @@ class MonteCarloPlayer(Player):
                 break
 
     def playout_policy(self, state: State, iteration:int) -> State:
-        # pass
-        # greedy.history.add(state)
-        # action = greedy.play(state, greedy.history)
-        # return state.apply_action(action)
-
         values = []
         actions = state.get_legal_actions()
-        allowed_actions = []
         for a in actions:
             next_state = state.apply_action(a)
-            if not next_state.is_draw():
-                allowed_actions.append(a)
-                h = self.heuristic(next_state, state.turn)
-                values.append(h)
+            h = self.heuristic(next_state, state.turn)
+            values.append(h)
         
         minVal = min(values)
         values = [x - minVal + 1 for x in values]
@@ -169,10 +144,8 @@ class MonteCarloPlayer(Player):
             values = [pow(x, 1) for x in values]
 
         rand = random.randint(0, sum(values))
-        # print(values)
 
         for i in range(len(values)):
             rand -= values[i]
             if rand <= 0:
-                # print(f"Select index {i}")
-                return state.apply_action(allowed_actions[i])
+                return state.apply_action(actions[i])

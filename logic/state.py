@@ -1,5 +1,7 @@
 from __future__ import annotations
 import copy 
+import pygame
+import math
 
 from logic.type import *
 
@@ -50,15 +52,14 @@ class State:
     roads: list[RoadState]
     cars: list[CarState]
     turn: Owner
-    # Don't store the actual cards, instead store how many of each card is still available in the deck
-    # the index in the array corresponds to 
     car_map: dict[(int,int), Car]
+    lead_to: Action
     
-    def __init__(self, roads: list[RoadState], cars: list[CarState], turn: Owner) -> None:
+    def __init__(self, roads: list[RoadState], cars: list[CarState], turn: Owner, lead_to: Action) -> None:
         self.roads = roads
         self.cars = cars
         self.turn = turn
-        # Create a car map
+        self.lead_to = lead_to
 
     def generate_map(self):
         self.car_map = {}
@@ -101,6 +102,7 @@ class State:
         if switch_turn:
             new_state.switch_turn()
         new_state.generate_map()
+        new_state.lead_to = action
         return new_state
     
     def minimized_state(self):
@@ -146,11 +148,29 @@ class State:
                     actions.append(Action(None, [move]))
 
         actions = [*actions, *[Action(shift, []) for shift in self.all_shifts()]]
-
+        actions = [a for a in actions if not self.is_reverse_action(a)]
         return actions
 
-    # slight rule change, 
-    # the player wins when they reach the end of the board, 
+    def is_reverse_action(self, new: Action) -> bool:
+        prev = self.lead_to 
+        
+        if new.shift:
+            if prev.shift != None:
+                return (prev.shift.road == new.shift.road 
+                        and math.copysign(1, prev.shift.y_delta) 
+                            == -math.copysign(1, new.shift.y_delta))
+        else:
+            if len(prev.moves) > 0:
+                reverse = True
+                for i in range(len(prev.moves)):
+                    reverse = (reverse and prev.moves[i].car == new.moves[i].car 
+                              and math.copysign(1, prev.moves[i].magnitude()) 
+                                  == -math.copysign(1, new.moves[i].magnitude()))
+                return reverse
+        return False
+
+    # slight rule change,
+    # the player when they reach the end of the board, 
     # not when they have driven over the edge
     def get_winner(self, map: Map):
         player1_car, player2_car = self.get_player_cars()
@@ -276,35 +296,10 @@ class State:
 
 # Note: this is not declared as a member functions, due to typing limitations
 def copy_state(state:State) -> State:
-    new_state = State(copy.copy(state.roads), copy.copy(state.cars), state.turn)
+    new_state = State(copy.copy(state.roads), copy.copy(state.cars), state.turn, state.lead_to)
     # create a somewhat shallow copy of the state, Cars and roads should not be recreated but RoadState and CarState might have to be recreated.
     # Otherwise reference existing RoadState and CarState unless they have changed in someway(This might be too annoying to deal with)
     return new_state
-
-
-def reconstruct_from_minimal_state_and_map(map:Map, minimized_state):
-    # minimized format (the list are actually tuples)
-    # (cars: list[tuple(id, x,y)], road_yoffset: list[int], turn: Owner)
-    car_info = {}
-    for info in minimized_state[0]:
-        car_info[info[0]] = info
-    # print(car_info)
-    cars = []
-    # print(map.initial_state.cars)
-    for c in map.initial_state.cars:
-        cars.append(CarState(car_info[c.car.id][1],car_info[c.car.id][2],c.car))
-    # print(cars)
-    roads = []
-    for i in range(len(map.initial_state.roads)):
-        road = map.initial_state.roads[i]
-        roads.append(RoadState(minimized_state[1][i], road.road))
-    state= State(roads, cars, minimized_state[2])
-    state.generate_map()
-    # print()
-    # # print(f"previous {minimized_state}")
-    # print(f"minimized {state.minimized_state() == minimized_state}")
-    # print()
-    return state
 
 @dataclass(frozen=True, slots=True)
 class Map:

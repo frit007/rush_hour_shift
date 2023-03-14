@@ -21,14 +21,11 @@ class IterativeDeepeningPlayer(Player):
     depth_limit: int
     map: Map
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.transpositions = {}
-
     def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history
         self.owner = state.turn
         self.map = map
+        self.transpositions = {}
 
 
         print(f"initial heuristic {self.heuristic(state)}")
