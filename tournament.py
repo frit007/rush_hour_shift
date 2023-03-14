@@ -21,8 +21,7 @@ from players.pool_monte_carlo import PoolMonteCarloPlayer
 # contenders = [Random(), MinimaxPlayer(),
 #                IterativeDeepeningPlayer(), IterativeDeepeningPlayerWithHistory(),
 #                MonteCarloPlayer(), MonteCarloPlayerProcessed(), GreedyPlayer(), PoolMonteCarloPlayer()]
-contenders = [Random(), 
-               IterativeDeepeningPlayerWithHistory(),MonteCarloPlayerProcessed(),]
+contenders = [Random(), GreedyPlayer(),MonteCarloPlayerProcessed(),]
 
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')

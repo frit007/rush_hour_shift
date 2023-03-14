@@ -156,16 +156,12 @@ class State:
         
         if new.shift:
             if prev.shift != None:
-                return (prev.shift.road == new.shift.road 
-                        and math.copysign(1, prev.shift.y_delta) 
-                            == -math.copysign(1, new.shift.y_delta))
+                return (prev.shift.road == new.shift.road )
         else:
             if len(prev.moves) > 0:
-                reverse = True
+                reverse = False
                 for i in range(len(prev.moves)):
-                    reverse = (reverse and prev.moves[i].car == new.moves[i].car 
-                              and math.copysign(1, prev.moves[i].magnitude()) 
-                                  == -math.copysign(1, new.moves[i].magnitude()))
+                    reverse = (reverse or prev.moves[i].car == new.moves[i].car)
                 return reverse
         return False
 
