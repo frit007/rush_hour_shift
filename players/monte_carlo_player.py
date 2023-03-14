@@ -131,15 +131,12 @@ class MonteCarloPlayer(Player):
     def playout_policy(self, state: State, iteration:int) -> State:
         values = []
         actions = state.get_legal_actions()
-        allowed_actions = []
         for a in actions:
             next_state = state.apply_action(a)
-            if not next_state.is_draw(): #TODO: apply penalty in heuristic instead
-                allowed_actions.append(a)
-                h = self.heuristic(next_state, state.turn)
-                values.append(h)
+            h = self.heuristic(next_state, state.turn)
+            values.append(h)
         
-        minVal = min(values) #Fix that values can be empty
+        minVal = min(values)
         values = [x - minVal + 1 for x in values]
         if iteration < 300:
             values = [pow(x, 7) for x in values]
@@ -151,4 +148,4 @@ class MonteCarloPlayer(Player):
         for i in range(len(values)):
             rand -= values[i]
             if rand <= 0:
-                return state.apply_action(allowed_actions[i])
+                return state.apply_action(actions[i])
