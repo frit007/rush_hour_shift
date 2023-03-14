@@ -1,3 +1,4 @@
+import os
 import time
 import concurrent.futures
 
@@ -10,6 +11,10 @@ class PoolMonteCarloPlayer(MonteCarloPlayer):
     owner: Owner
     map: Map
     max_processes: int
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.max_processes = os.cpu_count()
 
     def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history
