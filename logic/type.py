@@ -27,7 +27,6 @@ class Road:
 @dataclass(frozen=True, slots=True)
 class Car:
     id: int
-    image: pygame.Surface = field(repr=False)
     car_length: int
     direction: Direction
     owner: Owner

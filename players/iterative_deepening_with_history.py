@@ -62,7 +62,7 @@ class IterativeDeepeningPlayerWithHistory(Player):
             else:
                 break
         for s in path:
-            draw_state(s)
+            draw_state(s, self.map)
             pygame.display.flip()
             sleep(0.3)
 

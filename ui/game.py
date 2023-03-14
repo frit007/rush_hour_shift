@@ -37,12 +37,12 @@ def create_window():
     screen.fill(GAME_BG_COLOR)
 
 
-def draw_car(car_state: CarState, draw_offset:tuple[int, int]):
-    screen.blit(car_state.car.image, screen_coord(car_state.x, car_state.y, draw_offset))
+def draw_car(car_state: CarState, draw_offset:tuple[int, int], map: Map):
+    screen.blit(map.images[car_state.car.id], screen_coord(car_state.x, car_state.y, draw_offset))
 
-def draw_cars(car_states: list[CarState], draw_offset:tuple[int, int]):
+def draw_cars(car_states: list[CarState], draw_offset:tuple[int, int], map: Map):
     for car_state in car_states:
-        draw_car(car_state, draw_offset)
+        draw_car(car_state, draw_offset, map)
 
 def calculate_draw_offset(roads: list[RoadState]):
     # height = roads[0].road.to_y
@@ -101,11 +101,11 @@ def draw_car_positions(state: State, draw_offset: tuple[int, int]):
         textRect.center = ((car_state.x + draw_offset[0] + 0.5) * TILE_SIZE, (car_state.y + draw_offset[1] + 0.5) * TILE_SIZE)
         screen.blit(text, textRect)
 
-def draw_state(state: State):
+def draw_state(state: State, map: Map):
     screen.fill(GAME_BG_COLOR)
     draw_offset = calculate_draw_offset(state.roads)
     draw_roads(state.roads, draw_offset)
-    draw_cars(state.cars, draw_offset)
+    draw_cars(state.cars, draw_offset, map)
     # draw_car_ids(state, draw_offset)
     # draw_car_positions(state, draw_offset)
     highlight_turn_car(state, draw_offset)
@@ -133,8 +133,8 @@ class CollisionType(Enum):
     ROAD = 3
 
 
-def car_rect(car: CarState, draw_offset: tuple[int, int]):
-    return car.car.image.get_rect().move(screen_coord(car.x, car.y, draw_offset))
+def car_rect(car: CarState, draw_offset: tuple[int, int], map: Map):
+    return map.images[car.car.id].get_rect().move(screen_coord(car.x, car.y, draw_offset))
 
 def field_rect(x: int,y: int, draw_offset: tuple[int, int], size: tuple[int, int]=(1,1)):
     top_left = screen_coord(x, y, draw_offset)
@@ -153,14 +153,14 @@ class OverlappingElement:
     rect: pygame.Rect
     grid_pos: tuple[int, int]
 
-def get_overlapping_elements(x: int, y: int, state: State) -> list[OverlappingElement]:
+def get_overlapping_elements(x: int, y: int, state: State, map: Map) -> list[OverlappingElement]:
     overlaps = []
     draw_offset = calculate_draw_offset(state.roads)
     
     grid_pos = (math.floor((x) / TILE_SIZE) - draw_offset[0], math.floor((y) / TILE_SIZE) - draw_offset[1])
 
     for car in state.cars:
-        image_rect = car_rect(car, draw_offset)
+        image_rect = car_rect(car, draw_offset, map)
         if image_rect.collidepoint(x, y):
             overlaps.append(OverlappingElement(car, CollisionType.CAR, image_rect, grid_pos))
     

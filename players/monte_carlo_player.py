@@ -84,7 +84,7 @@ class MonteCarloPlayer(Player):
             C = math.sqrt(2) # Test with other values
             return exploit + C * explore
 
-    def select(self, node: Node):
+    def select(self, node: Node) -> Node:
         if node.isLeaf():
             return node
         else:
@@ -96,7 +96,7 @@ class MonteCarloPlayer(Player):
             
             return self.select(max[0])
 
-    def expand(self, node: Node):
+    def expand(self, node: Node) -> Node:
         if node.playouts == 0 and node.parent != None:
             return node
         
@@ -130,7 +130,7 @@ class MonteCarloPlayer(Player):
         print("playout moves: " + str(counter), flush=True)
         return current_state.get_winner(self.map)
 
-    def back_propagate(self, winner: Owner, node: Node) -> State:
+    def back_propagate(self, winner: Owner, node: Node) -> None:
         while True:
             node.playouts += 1
             # if node.state.turn == winner:

@@ -28,6 +28,7 @@ class HumanPlayer(Player):
         self.selected_road = None
         self.action = Action(None, [])
         self.current_shift = None
+        self.map = map
 
         while self.moves_remaining > 0:
             if self.selected_car != None:
@@ -39,7 +40,7 @@ class HumanPlayer(Player):
         return self.action
     
     def __move_selected_car(self):
-        draw_offset = draw_state(self.current_state)
+        draw_offset = draw_state(self.current_state, self.map)
         paint_highlight_rect(self.selected_car.rect, pygame.Color(0,0,255,255))
 
         # Highlight moves
@@ -54,7 +55,7 @@ class HumanPlayer(Player):
                 exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                for element in get_overlapping_elements(mouse_x, mouse_y, self.current_state):
+                for element in get_overlapping_elements(mouse_x, mouse_y, self.current_state, self.map):
                     if element.type == CollisionType.SQUARE:
                        moves = [x.move for x in move_and_positions if x.position == element.grid_pos]
                        if len(moves) > 0:
@@ -89,7 +90,7 @@ class HumanPlayer(Player):
         if self.current_shift != None:
             self.current_state = self.original_state.apply_action(Action(self.current_shift,  []), False)
 
-        draw_offset = draw_state(self.current_state)
+        draw_offset = draw_state(self.current_state, self.map)
 
         # Find the road including the offset from the current state
         for road in self.current_state.roads:
@@ -118,7 +119,7 @@ class HumanPlayer(Player):
 
 
     def __select_car_or_road(self):
-        draw_state(self.current_state)
+        draw_state(self.current_state, self.map)
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -126,7 +127,7 @@ class HumanPlayer(Player):
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                for element in get_overlapping_elements(mouse_x, mouse_y, self.current_state):
+                for element in get_overlapping_elements(mouse_x, mouse_y, self.current_state, self.map):
                     if element.type == CollisionType.CAR:
                         car = element.target.car
                         player_owns_car = car.owner == self.current_state.turn

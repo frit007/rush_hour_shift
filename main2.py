@@ -12,14 +12,15 @@ from players.iterative_deepening_player import IterativeDeepeningPlayer
 from players.iterative_deepening_with_history import IterativeDeepeningPlayerWithHistory
 from players.beam_player import BeamPlayer
 from players.monte_carlo_player import MonteCarloPlayer
+from players.pool_monte_carlo import PoolMonteCarloPlayer
 
 def main():
     pygame.init()
     map_options, maps = map(list, zip(*load_maps()))
     players = [HumanPlayer, Random, MinimaxPlayer, BeamPlayer,
                IterativeDeepeningPlayer, IterativeDeepeningPlayerWithHistory,
-               MonteCarloPlayer, GreedyPlayer]
-    new_game(maps[0], players[2](), players[0]())
+               MonteCarloPlayer, GreedyPlayer, PoolMonteCarloPlayer]
+    new_game(maps[0], players[8](), players[0]())
     pygame.quit()
 
 if __name__ == "__main__":

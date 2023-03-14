@@ -15,6 +15,7 @@ from players.iterative_deepening_with_history import IterativeDeepeningPlayerWit
 from players.beam_player import BeamPlayer
 from players.monte_carlo_player import MonteCarloPlayer
 from players.monte_carlo_player_processed import MonteCarloPlayerProcessed
+from players.pool_monte_carlo import PoolMonteCarloPlayer
 
 def main():
     pygame.init()
@@ -22,7 +23,7 @@ def main():
     game_maps = load_maps()
     players = [HumanPlayer, Random, MinimaxPlayer, BeamPlayer,
                IterativeDeepeningPlayer, IterativeDeepeningPlayerWithHistory,
-               MonteCarloPlayer, MonteCarloPlayerProcessed, GreedyPlayer]
+               MonteCarloPlayer, MonteCarloPlayerProcessed, GreedyPlayer, PoolMonteCarloPlayer]
     init_main_screen(root, game_maps, players)
     root.mainloop()
     pygame.quit()

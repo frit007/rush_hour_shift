@@ -63,6 +63,8 @@ def read_map(lines : list[str], map_id: int) -> State:
     cars: list[CarState] = []
     roads: list[RoadState] = []
     car_id = 0
+    image_dictionary = {}
+
     for i in range(len(lines)):
         lines[i] = list(lines[i].replace("\n",""))
 
@@ -89,12 +91,14 @@ def read_map(lines : list[str], map_id: int) -> State:
                                 image = random.choice(car_images[length])
                                 owner = Owner.NEUTRAL
 
-                        car = Car(car_id, pygame.transform.rotate(image, rotation), length, Direction.HORIZONTAL, owner)
+                        car = Car(car_id, length, Direction.HORIZONTAL, owner)
+                        image_dictionary[car.id] = pygame.transform.rotate(image, rotation)
                         
                 elif marker in vertical_markers:
                     length = y1 - y0 + 1
                     image = random.choice(car_images[length])
-                    car = Car(car_id, image, length, Direction.VERTICAL, Owner.NEUTRAL)
+                    car = Car(car_id, length, Direction.VERTICAL, Owner.NEUTRAL)
+                    image_dictionary[car.id] = image
 
                 cars.append(CarState(x0, y0, car))
                 car_id = car_id + 1
@@ -109,7 +113,7 @@ def read_map(lines : list[str], map_id: int) -> State:
 
             x += 1
 
-    map = Map(map_id, State(roads, cars, Owner.PLAYER1), x - 2, 0, roads[0].width() + roads[1].width())
+    map = Map(map_id, State(roads, cars, Owner.PLAYER1), x - 2, 0, roads[0].width() + roads[1].width(), image_dictionary)
     map.initial_state.generate_map()
     return map
 

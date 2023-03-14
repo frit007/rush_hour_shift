@@ -15,7 +15,7 @@ def new_game(map: Map, player1: Player, player2: Player):
     current_state = map.initial_state
     history = set()
     moves = 0
-    draw_state(current_state)
+    draw_state(current_state, map)
     pygame.display.flip()
     pygame.event.get()
 
@@ -24,7 +24,7 @@ def new_game(map: Map, player1: Player, player2: Player):
         history.add(current_state)
         current_state = current_state.apply_action(action)
         turn = (turn + 1) % 2 # switch players
-        draw_state(current_state)
+        draw_state(current_state, map)
         pygame.display.flip()
         pygame.event.get()
         moves += 1

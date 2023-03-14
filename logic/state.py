@@ -80,7 +80,7 @@ class State:
     # Note: This doesn't switch whose turn it is
     # Return a new state, with the actions applied
     def apply_action(self, action: Action, switch_turn: bool = True):
-        new_state = copyState(self)
+        new_state = copy_state(self)
         if action.shift != None:
             shift = action.shift
             road = shift.road
@@ -275,7 +275,7 @@ class State:
         return moves
 
 # Note: this is not declared as a member functions, due to typing limitations
-def copyState(state:State) -> State:
+def copy_state(state:State) -> State:
     new_state = State(copy.copy(state.roads), copy.copy(state.cars), state.turn)
     # create a somewhat shallow copy of the state, Cars and roads should not be recreated but RoadState and CarState might have to be recreated.
     # Otherwise reference existing RoadState and CarState unless they have changed in someway(This might be too annoying to deal with)
@@ -313,3 +313,4 @@ class Map:
     player1_goal: int
     player2_goal: int
     potential_roadblocks: int
+    images: dict[int, pygame.Surface]
