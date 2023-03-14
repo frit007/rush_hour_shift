@@ -21,7 +21,7 @@ from players.pool_monte_carlo import PoolMonteCarloPlayer
 # contenders = [Random(), MinimaxPlayer(),
 #                IterativeDeepeningPlayer(), IterativeDeepeningPlayerWithHistory(),
 #                MonteCarloPlayer(), MonteCarloPlayerProcessed(), GreedyPlayer(), PoolMonteCarloPlayer()]
-contenders = [Random(), GreedyPlayer(),MonteCarloPlayerProcessed(),]
+contenders = [Random(), GreedyPlayer(),MonteCarloPlayerProcessed(),IterativeDeepeningPlayer()]
 
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
@@ -59,6 +59,11 @@ def main():
             start = time.time()
             end = start
             print(f"{player1.name} vs {player2.name}")
+            
+            filename = f"tournament_{player1.name}_vs_{player2.name}.json"
+            if os.path.isfile(filename):
+                print("skip")
+                continue
 
             while current_state.get_winner(map) == None and not(end - start > time_limit) and moves < move_limit:
                 blockPrint()
@@ -85,7 +90,7 @@ def main():
                 print(f"Draw")
                 result = Result(player1.name, player2.name, 0, moves, time_used)
             results.append(asdict(result))
-            out_file = open(f"tournament_{player1.name}_vs_{player2.name}.json", "w")
+            out_file = open(filename, "w")
             
             json.dump(asdict(result), out_file, indent = 4)
             

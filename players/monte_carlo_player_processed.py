@@ -33,11 +33,6 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
 
         for p in processes:
             work_queue.put_nowait("stop")
-            # p.terminate()
-            # p.close()
-        
-        # for p in processes:
-            # p.close()
 
         return move
 

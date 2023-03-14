@@ -18,11 +18,7 @@ class MinimaxPlayer(Player):
         self.owner = state.turn
         self.map = map
         self.transpositions = {}
-        print(self.owner)
-        print(f"initial heuristic {self.heuristic(state)}")
         v, move = self.__max_value(state, 0, 0)
-        print(f"selected move: {repr(move)} value: {v}")
-        print(f"final heuristic {self.heuristic(state.apply_action(move))}")
         return move
 
     def __max_value(self, state: State, depth: int, exclude_car: Car) -> tuple[float, Action]:
