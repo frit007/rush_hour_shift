@@ -113,7 +113,8 @@ def read_map(lines : list[str], map_id: int) -> State:
 
             x += 1
 
-    map = Map(map_id, State(roads, cars, Owner.PLAYER1), x - 2, 0, roads[0].width() + roads[1].width(), image_dictionary)
+    map = Map(map_id, State(roads, cars, Owner.PLAYER1, Action(None, [])), 
+              x - 2, 0, roads[0].width() + roads[1].width(), image_dictionary)
     map.initial_state.generate_map()
     return map
 

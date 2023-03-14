@@ -6,21 +6,18 @@ from players.player import *
 
 DEPTH_LIMIT = 3
 class MinimaxPlayer(Player):
-    name = "MinMax Player"
+    name = "MiniMax Player"
     # TODO: Add depth to transpositions, since it is important at which depth a state was analyzed
     transpositions: dict[State, (float, Action, int)]
     history: set[State]
     owner: Owner
     map: Map
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.transpositions = {}
-
     def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history
         self.owner = state.turn
         self.map = map
+        self.transpositions = {}
         print(self.owner)
         print(f"initial heuristic {self.heuristic(state)}")
         v, move = self.__max_value(state, 0, 0)
