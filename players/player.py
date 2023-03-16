@@ -14,4 +14,7 @@ class Player:
         pass
 
     def heuristic(self, state: State, optimize_for: Owner = None):
-        return heuristic_a(self, state, optimize_for)
+        if hasattr(self, 'use_heuristic'):
+            return self.use_heuristic(self, state, optimize_for)
+        else:
+            return heuristic_a(self, state, optimize_for)

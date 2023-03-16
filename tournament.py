@@ -1,7 +1,10 @@
 import json
-import os, sys
-
+import os
+import sys
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
+
+from heuristics.heuristic_b import heuristic_b
+
 
 from dataclasses import asdict, dataclass
 import time
@@ -18,10 +21,31 @@ from players.beam_player import BeamPlayer
 from players.monte_carlo_player import MonteCarloPlayer
 from players.monte_carlo_player_processed import MonteCarloPlayerProcessed
 from players.pool_monte_carlo import PoolMonteCarloPlayer
-# contenders = [Random(), MinimaxPlayer(),
-#                IterativeDeepeningPlayer(), IterativeDeepeningPlayerWithHistory(),
-#                MonteCarloPlayer(), MonteCarloPlayerProcessed(), GreedyPlayer(), PoolMonteCarloPlayer()]
-contenders = [Random(), GreedyPlayer(),MonteCarloPlayerProcessed(),IterativeDeepeningPlayer()]
+
+
+def replace_heuristic(algo, heuristic):
+    algo.name += " Heuristic B"
+    # algo.heuristic = lambda state, optimize_for=None: heuristic(algo, state, optimize_for)
+    algo.use_heuristic = heuristic
+    return algo
+
+def set_time_limit(algo, seconds):
+    algo.seconds = seconds
+    algo.name += f" time_limit {seconds}"
+    return algo
+
+
+contenders = [replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), Random(), MinimaxPlayer(),
+               IterativeDeepeningPlayer(), IterativeDeepeningPlayerWithHistory(),
+               MonteCarloPlayer(), MonteCarloPlayerProcessed(), GreedyPlayer(), PoolMonteCarloPlayer()]
+# contenders = [Random(), GreedyPlayer(),MonteCarloPlayerProcessed(),IterativeDeepeningPlayer()]
+
+# contenders = [
+#     set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 10), 
+#     set_time_limit(MonteCarloPlayerProcessed(), 10),
+#     set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 20), 
+#     set_time_limit(MonteCarloPlayerProcessed(), 20),
+#     ]
 
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
@@ -43,7 +67,7 @@ map_options, maps = map(list, zip(*load_maps()))
 map = maps[0]
 
 move_limit = 1000
-time_limit = 60*30 # 30 minute time limit
+time_limit = 60*60*2 # 2 hour time limit
 
 
 def main():
@@ -58,6 +82,8 @@ def main():
             moves = 0
             start = time.time()
             end = start
+            print(" ")
+            print(" ")
             print(f"{player1.name} vs {player2.name}")
             
             filename = f"tournament_{player1.name}_vs_{player2.name}.json"
