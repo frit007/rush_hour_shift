@@ -54,7 +54,7 @@ class State:
     turn: Owner
     car_map: dict[(int,int), Car]
     lead_to: Action
-    
+
     def __init__(self, roads: list[RoadState], cars: list[CarState], turn: Owner, lead_to: Action) -> None:
         self.roads = roads
         self.cars = cars
@@ -138,6 +138,11 @@ class State:
                 player2_car = car
         return player1_car, player2_car
 
+    def get_player_car(self, owner:Owner):
+        for car in self.cars:
+            if car.car.owner == owner:
+                return car
+
     def get_legal_actions(self) -> list[Action]:
         actions = []
         
@@ -152,8 +157,8 @@ class State:
         return actions
 
     def is_reverse_action(self, new: Action) -> bool:
-        prev = self.lead_to 
-        
+        prev = self.lead_to
+
         if new.shift:
             if prev.shift != None:
                 return (prev.shift.road == new.shift.road )
@@ -289,6 +294,12 @@ class State:
                 break
 
         return moves
+
+    def road_from_coordinate(self, x:int):
+        for road in self.roads:
+            if (road.from_x() <= x and x <= road.to_x()):
+                return road
+
 
 # Note: this is not declared as a member functions, due to typing limitations
 def copy_state(state:State) -> State:
