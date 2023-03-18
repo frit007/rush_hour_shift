@@ -48,7 +48,7 @@ class MonteCarloPlayer(Player):
     name = "Monte Carlo Player"
     owner: Owner
     map: Map
-    seconds = 30
+    seconds = 20
 
     def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history

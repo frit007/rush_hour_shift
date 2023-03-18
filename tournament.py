@@ -91,7 +91,7 @@ def result_to_latex(results):
     for i in range(len(contenders) ):
         cs += "c|"
 
-    latex = "\\begin{center} \\begin{tabular}{" + cs + "}\\hline\n"
+    latex = "\\begin{center}\n\\begin{tabular}{" + cs + "}\\hline\n"
 
 
     first_row = ""
@@ -118,7 +118,7 @@ def result_to_latex(results):
                 index += 1
         latex += "\\\\\hline\n"
 
-    latex += "\\end{tabular}\\end{center}"
+    latex += "\\end{tabular}\n\\end{center}"
     latex += "\n\n"
     latex += "\\begin{enumerate}\n"
     for player in contenders:

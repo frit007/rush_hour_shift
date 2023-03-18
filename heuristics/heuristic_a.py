@@ -22,7 +22,7 @@ def heuristic_a(self, state: State, optimize_for: Owner = None):
 
         player1_blocking = 0
         distance = CAR_BLOCK_SCALE * CAR_BLOCK_TILES
-        for x in range(player1_car.x + 2, min(self.map.player1_goal + 1, player1_car.x + 2 + CAR_BLOCK_TILES)):
+        for x in range(player1_car.x + 2, min(self.map.player1_goal + 2, player1_car.x + 2 + CAR_BLOCK_TILES)):
             distance -= CAR_BLOCK_SCALE
             car = state.car_map.get((x, player1_car.y))
             if car != None:
@@ -32,7 +32,7 @@ def heuristic_a(self, state: State, optimize_for: Owner = None):
                 player1_blocking += CAR_BLOCK_PENALTIES[distance]
 
         # small penalty for being on the row as blocking cars. Give enough vision to avoid waiting for a car that never moves
-        for x in range(player1_car.x + 2, self.map.player1_goal + 1):
+        for x in range(player1_car.x + 2, self.map.player1_goal + 2):
             car = state.car_map.get((x, player1_car.y))
             if car != None:
                 if car.direction == Direction.HORIZONTAL:
@@ -54,7 +54,7 @@ def heuristic_a(self, state: State, optimize_for: Owner = None):
 
         player2_blocking = 0
         distance = CAR_BLOCK_SCALE * CAR_BLOCK_TILES
-        for x in range(player2_car.x - 1, max(self.map.player2_goal, player2_car.x - 1 - CAR_BLOCK_TILES), -1):
+        for x in range(player2_car.x - 1, max(self.map.player2_goal - 1, player2_car.x - 1 - CAR_BLOCK_TILES), -1):
             distance -= CAR_BLOCK_SCALE
             car = state.car_map.get((x, player2_car.y))
             if car != None:
@@ -63,7 +63,7 @@ def heuristic_a(self, state: State, optimize_for: Owner = None):
                     player2_blocking += CAR_BLOCK_PENALTIES[distance] * 15
                 player2_blocking += CAR_BLOCK_PENALTIES[distance]
 
-        for x in range(player2_car.x - 1, self.map.player2_goal, -1):
+        for x in range(player2_car.x - 1, self.map.player2_goal - 1, -1):
             car = state.car_map.get((x, player2_car.y))
             if car != None:
                 if car.direction == Direction.HORIZONTAL:

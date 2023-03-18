@@ -11,7 +11,6 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
     owner: Owner
     map: Map
 
-    seconds = 30
 
     def __init__(self) -> None:
         super().__init__()

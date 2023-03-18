@@ -11,7 +11,6 @@ class PoolMonteCarloPlayer(MonteCarloPlayer):
     owner: Owner
     map: Map
     max_processes: int
-    seconds = 30
 
     def __init__(self) -> None:
         super().__init__()
