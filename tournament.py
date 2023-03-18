@@ -36,15 +36,16 @@ def set_time_limit(algo, seconds):
 
 
 contenders = [
-    Random(), # 0
-    MinimaxPlayer(), # 1
-    IterativeDeepeningPlayer(), # 2
-    IterativeDeepeningPlayerWithHistory(), # 3
-    GreedyPlayer(), # 4
-    MonteCarloPlayer(), # 5
-    MonteCarloPlayerProcessed(), # 6
-    replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), # 7
-    PoolMonteCarloPlayer() # 8
+    Random(), 
+    MinimaxPlayer(), 
+    IterativeDeepeningPlayer(), 
+    IterativeDeepeningPlayerWithHistory(), 
+    BeamPlayer(),
+    GreedyPlayer(), 
+    MonteCarloPlayer(), 
+    MonteCarloPlayerProcessed(), 
+    replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), #
+    PoolMonteCarloPlayer() 
 ]
 # contenders = [Random(), GreedyPlayer(),MonteCarloPlayerProcessed(),IterativeDeepeningPlayer()]
 
@@ -102,20 +103,25 @@ def result_to_latex(results):
     latex+= first_row + "\\\\\hline\n"
 
     symbol = {0:"0", 1: "-", 2: "+"}
+    reverseSymbol = {0:"0", 1: "+", 2: "-"}
     index = 0
     for row in range(len(contenders)):
         latex += str(row + 1)
         for column in range(len(contenders)):
             match = findMatch(row, column)
-            if match == None:
-                # Match against themselves
-                latex +=  "&0"
-            else:
-                if row == 5:
-                    print(match)
-                # latex += "&" + symbol[results[index]["result"]]
-                latex += "&" + symbol[match["result"]]
+            reverseMatch = findMatch(column, row)
+            if column >= row:
+                latex += "&" + symbol[match["result"]] + "/" + reverseSymbol[reverseMatch["result"]]
                 index += 1
+            else:
+                latex +=  "&\_"
+            # if match == None:
+            #     # Match against themselves
+            #     latex +=  "&0"
+            # else:
+            #     # latex += "&" + symbol[results[index]["result"]]
+            #     latex += "&" + symbol[match["result"]]
+            #     index += 1
         latex += "\\\\\hline\n"
 
     latex += "\\end{tabular}\n\\end{center}"

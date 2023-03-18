@@ -3,8 +3,8 @@ from logic.type import Action
 from ui.game import *
 from players.player import *
 
-BEAM_WIDTH = 3
-MAX_DEPTH = 5
+BEAM_WIDTH = 5
+MAX_DEPTH = 10
 
 class BeamPlayer(Player):
     name = "Beam Search"
@@ -30,7 +30,7 @@ class BeamPlayer(Player):
             for i in range(min(len(queue), beam_width)):
                 current_heuristic, sort_number, current_state, current_actions = queue[i]
                 for action in current_state.get_legal_actions():
-                    next_state = current_state.apply_action(action)
+                    next_state = current_state.apply_action(action, False)
                     next_actions = current_actions + [action]
                     new_queue.append((next_state, next_actions))
             queue = []
@@ -40,7 +40,7 @@ class BeamPlayer(Player):
                 sort_number += 1
                 queue.sort(reverse=True)
             num_expanded += len(new_queue)
-            if queue[0][2].get_winner(self.map) != None:
+            if queue[0][2].get_winner(self.map) == self.owner:
                 return queue[0][3][0]
 
         print(queue[0][3], num_expanded)
