@@ -25,7 +25,7 @@ Maps 1-10 were taken from the game setup descriptions at [Ultra Boardgames](http
 - MinimaxPlayer
 - BeamPlayer
 - IterativeDeepeningPlayer
-- IterativeDeepeningPlayerWithHistory,
+- IterativeDeepeningPlayerWithHistory
 - MonteCarloPlayer
 - GreedyPlayer
 - PoolMonteCarloPlayer
