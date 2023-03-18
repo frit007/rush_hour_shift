@@ -48,6 +48,7 @@ class MonteCarloPlayer(Player):
     name = "Monte Carlo Player"
     owner: Owner
     map: Map
+    seconds = 30
 
     def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history
@@ -65,8 +66,12 @@ class MonteCarloPlayer(Player):
             print(f"({counter}) ",end="")
             leaf = self.select(tree) 
             child = self.expand(leaf)
-            result = self.simulate(child)
-            self.back_propagate(result, child)
+            
+            if child.won_in_path:
+                self.back_propagate(child.won_in_path, child)
+            else:
+                result = self.simulate(child.state)
+                self.back_propagate(result, child)
             counter += 1
             end = time.time()
 
@@ -112,10 +117,7 @@ class MonteCarloPlayer(Player):
         node.children.sort(key=lambda c: self.heuristic(c.state, self.owner), reverse = True)
         return node.children[0]
 
-    def simulate(self, node: Node) -> Owner:
-        if node.won_in_path:
-            return node.won_in_path
-        current_state = node.state
+    def simulate(self, current_state: State) -> Owner:
         counter = 0
         while current_state.get_winner(self.map) == None:
             counter += 1

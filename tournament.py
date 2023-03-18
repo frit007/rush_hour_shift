@@ -31,20 +31,30 @@ def replace_heuristic(algo, heuristic):
 
 def set_time_limit(algo, seconds):
     algo.seconds = seconds
-    algo.name += f" time_limit {seconds}"
+    algo.name += f" time limit {seconds}"
     return algo
 
 
-contenders = [replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), Random(), MinimaxPlayer(),
-               IterativeDeepeningPlayer(), IterativeDeepeningPlayerWithHistory(),
-               MonteCarloPlayer(), MonteCarloPlayerProcessed(), GreedyPlayer(), PoolMonteCarloPlayer()]
+contenders = [
+    Random(), # 0
+    MinimaxPlayer(), # 1
+    IterativeDeepeningPlayer(), # 2
+    IterativeDeepeningPlayerWithHistory(), # 3
+    GreedyPlayer(), # 4
+    MonteCarloPlayer(), # 5
+    MonteCarloPlayerProcessed(), # 6
+    replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), # 7
+    PoolMonteCarloPlayer() # 8
+]
 # contenders = [Random(), GreedyPlayer(),MonteCarloPlayerProcessed(),IterativeDeepeningPlayer()]
 
 # contenders = [
-#     set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 10), 
-#     set_time_limit(MonteCarloPlayerProcessed(), 10),
-#     set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 20), 
-#     set_time_limit(MonteCarloPlayerProcessed(), 20),
+#     # set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 1), 
+#     set_time_limit(MonteCarloPlayerProcessed(), 1),
+#     set_time_limit(MonteCarloPlayer(), 1),
+#     set_time_limit(PoolMonteCarloPlayer(), 1),
+#     # set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 2), 
+#     # set_time_limit(MonteCarloPlayerProcessed(), 2),
 #     ]
 
 def blockPrint():
@@ -67,7 +77,54 @@ map_options, maps = map(list, zip(*load_maps()))
 map = maps[0]
 
 move_limit = 1000
-time_limit = 60*60*2 # 2 hour time limit
+time_limit = 60*60*1 # 1 hour time limit
+
+def findMatch(a, b):
+    player1 = contenders[a]
+    player2 = contenders[b]
+    for result in results:
+        if result["player1"] == player1.name and result["player2"] == player2.name:
+            return result
+
+def result_to_latex(results):
+    cs = "|c|"
+    for i in range(len(contenders) ):
+        cs += "c|"
+
+    latex = "\\begin{center} \\begin{tabular}{" + cs + "}\\hline\n"
+
+
+    first_row = ""
+
+    for column in range(len(contenders)):
+        first_row += "&"+str(column + 1)
+
+    latex+= first_row + "\\\\\hline\n"
+
+    symbol = {0:"0", 1: "-", 2: "+"}
+    index = 0
+    for row in range(len(contenders)):
+        latex += str(row + 1)
+        for column in range(len(contenders)):
+            match = findMatch(row, column)
+            if match == None:
+                # Match against themselves
+                latex +=  "&0"
+            else:
+                if row == 5:
+                    print(match)
+                # latex += "&" + symbol[results[index]["result"]]
+                latex += "&" + symbol[match["result"]]
+                index += 1
+        latex += "\\\\\hline\n"
+
+    latex += "\\end{tabular}\\end{center}"
+    latex += "\n\n"
+    latex += "\\begin{enumerate}\n"
+    for player in contenders:
+        latex += f"\t \item {player.name}\n"
+    latex += "\\end{enumerate}\n"
+    return latex
 
 
 def main():
@@ -88,6 +145,10 @@ def main():
             
             filename = f"tournament_{player1.name}_vs_{player2.name}.json"
             if os.path.isfile(filename):
+                in_file = open(filename, "r")
+                result = json.load(in_file)
+                results.append(result)
+                in_file.close()
                 print("skip")
                 continue
 
@@ -127,6 +188,8 @@ def main():
     json.dump(results, out_file, indent = 4)
     
     out_file.close()
+
+    print(result_to_latex(results))
 
 if __name__ == "__main__":
     main()

@@ -52,9 +52,13 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
             leaf = self.select(tree) 
             child = self.expand(leaf)
             self.back_propagate(None, child, True, False)
-            work.put_nowait((self.job_id, child))
+            if child.won_in_path:
+                self.back_propagate(child.won_in_path, child, False, True)
+                return True
+            work.put_nowait((self.job_id, child.state))
             jobs[self.job_id] = child
             self.job_id += 1
+            return False
 
         def receiveWork():
             (job_id, winner) = results.get()
@@ -69,7 +73,10 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
         # while self.job_id < limit:
             receiveWork()
             # print("receive")
-            assignWork()
+            while assignWork():
+                # Keep trying to assign work
+                pass
+            
             # print("assign")
             end = time.time()
 
@@ -95,6 +102,12 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
             else:
                 break
 
+    def simulate(self, current_state: State) -> Owner:
+        counter = 0
+        while current_state.get_winner(self.map) == None:
+            counter += 1
+            current_state = self.playout_policy(current_state, counter)
+        return current_state.get_winner(self.map)
 def monte_carlo_tree_worker(player: MonteCarloPlayerProcessed, work: Queue, results: Queue) -> Action:
     # maps = load_maps()
     # map = None

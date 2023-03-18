@@ -33,9 +33,12 @@ class PoolMonteCarloPlayer(MonteCarloPlayer):
             while end - start < self.seconds:
                 leafs = self.select_initial(tree)
                 children = list(map(self.expand, leafs))
-                # children_states = map(lambda c: c.state, children)
-                for child, result in zip(children, executor.map(self.simulate, children)):
-                    self.back_propagate(result, child)
+                children_states = map(lambda c: c.state, children)
+                for child, result in zip(children, executor.map(self.simulate, children_states)):
+                    if child.won_in_path:
+                        self.back_propagate(child.won_in_path, child)
+                    else:
+                        self.back_propagate(result, child)
                 counter += 1
                 end = time.time()
 

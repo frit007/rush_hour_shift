@@ -81,28 +81,23 @@ class State:
     # Note: This doesn't switch whose turn it is
     # Return a new state, with the actions applied
     def apply_action(self, action: Action, switch_turn: bool = True):
-        new_state = copy_state(self)
+        new_state = None
         if action.shift != None:
             shift = action.shift
             road = shift.road
             # Make copies of the original state, but shifted
-            new_state.roads = [RoadState(road_state.y_offset + shift.y_delta if road_state.road == road else road_state.y_offset, road_state.road) for road_state in self.roads]
-            new_state.cars = [CarState(car_state.x, car_state.y + (action.shift.y_delta if road.from_x <= car_state.x and car_state.x <= road.to_x else 0), car_state.car) for car_state in new_state.cars]
+            new_roads = [RoadState(road_state.y_offset + shift.y_delta if road_state.road == road else road_state.y_offset, road_state.road) for road_state in self.roads]
+            new_cars = [CarState(car_state.x, car_state.y + (action.shift.y_delta if road.from_x <= car_state.x and car_state.x <= road.to_x else 0), car_state.car) for car_state in self.cars]
+            new_state = State(new_roads, new_cars, self.turn, action)
+        else:
+            move = action.moves[0]
+            new_cars = [CarState(car.x + move.x_delta, car.y + move.y_delta, car.car) if car.car == move.car else car for car in self.cars]        
+            new_state = State(self.roads, new_cars, self.turn, action)
 
-        for move in action.moves:
-            current_car_state = new_state.__get_and_remove_car_state(move.car)
-            new_state.cars.append(
-                CarState(
-                    current_car_state.x + move.x_delta, 
-                    current_car_state.y + move.y_delta,
-                    current_car_state.car
-                )
-            )
-            
         if switch_turn:
             new_state.switch_turn()
+
         new_state.generate_map()
-        new_state.lead_to = action
         return new_state
     
     def minimized_state(self):
