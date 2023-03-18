@@ -1,11 +1,8 @@
-import pygame
 from time import sleep
-import math
 
 from logic.state import State
-from logic.type import Action, Owner, Car
+from logic.type import Action
 from players.player import *
-from ui.game import draw_state
     
 class GreedyPlayer(Player):
     name = "Greedy Player"

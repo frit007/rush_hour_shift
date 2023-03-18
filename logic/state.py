@@ -156,17 +156,23 @@ class State:
 
         if new.shift:
             if prev.shift != None:
-                return (prev.shift.road == new.shift.road )
+                return (prev.shift.road == new.shift.road 
+                        and math.copysign(1, prev.shift.y_delta) 
+                            == -math.copysign(1, new.shift.y_delta))
         else:
             if len(prev.moves) > 0:
                 reverse = False
                 for i in range(len(prev.moves)):
-                    reverse = (reverse or prev.moves[i].car == new.moves[i].car)
+                    reverse = (reverse or (prev.moves[i].car == new.moves[i].car 
+                                           and (math.copysign(1, prev.moves[i].x_delta) 
+                                                    == -math.copysign(1, new.moves[i].x_delta)
+                                                or math.copysign(1, prev.moves[i].y_delta) 
+                                                    == -math.copysign(1, new.moves[i].y_delta))))
                 return reverse
         return False
 
     # slight rule change,
-    # the player when they reach the end of the board, 
+    # the player when they reach the end of the board,
     # not when they have driven over the edge
     def get_winner(self, map: Map):
         player1_car, player2_car = self.get_player_cars()
