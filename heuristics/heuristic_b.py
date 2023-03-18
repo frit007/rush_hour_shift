@@ -2,7 +2,6 @@ from logic.state import State, Map, CarState, RoadState
 from logic.type import Owner, Direction
 
 def road_is_blocking(car_state: CarState, state: State, road:RoadState):
-    # print("Car y: " + str(car_state.y) + " Road2: " + str(road))
     if (not(car_state.y >= road.from_y() and car_state.y <= road.to_y())): 
         return True      
         
@@ -17,7 +16,6 @@ def heuristic_b(player, state: State, optimize_for: Owner = None):
         car_state = player1_car
         goal_x = player.map.player1_goal
         remaining_tiles = tiles_x-car_length-car_state.x
-        passed_tiles = tiles_x-car_length-remaining_tiles
         head_x = car_state.x+1
         path = range(car_state.x + 2, min(goal_x + 1, head_x + CAR_BLOCK_TILES + 1))
         third_tile_in_front = head_x+CAR_BLOCK_TILES
@@ -28,7 +26,6 @@ def heuristic_b(player, state: State, optimize_for: Owner = None):
         car_state = player2_car
         goal_x = player.map.player2_goal
         remaining_tiles = car_state.x
-        passed_tiles = tiles_x-car_length-remaining_tiles
         head_x = car_state.x
         
         path = range(car_state.x - 1, max(goal_x, head_x - CAR_BLOCK_TILES - 1), -1)
@@ -39,33 +36,29 @@ def heuristic_b(player, state: State, optimize_for: Owner = None):
 
 
     blocking_car_penalty = 0
-    # print("path " + str(path))
+
+    # Penalty for blocking cars
     for x in path:
-        #distance -= 2
-        # print("x: " + str(x)+", " + str(car_state.y))
         car = state.car_map.get((x, car_state.y))
         if car != None:
-            # print("FOUND CAR " + str(car.direction))
             if car.direction == Direction.HORIZONTAL:
                 # avoid horizontal cars on the same row
-                blocking_car_penalty += 2
-            blocking_car_penalty += 1
+                blocking_car_penalty += 5
+            blocking_car_penalty += 3
 
+    # Penalty if blocked by road
     road_block_penalty = 0
     road_after_three_tiles = state.road_from_coordinate(third_tile_in_front)
     if (road_after_three_tiles != None
         and road_is_blocking(car_state, state, road_after_three_tiles)):
-        road_block_penalty = 5
+        road_block_penalty = 9
 
+    # Bonus if moving blocking car, blocks opponent
     block_opponent_bonus = 0
     for x in opponent_path:
         car = state.car_map.get((x, opponent_row))
         if car != None:
             block_opponent_bonus += 1
 
-    #print("remaining_tiles " + str(2*remaining_tiles))
-    #print("blocking_car_penalty " + str(blocking_car_penalty))
-    #print("road_block_penalty " + str(road_block_penalty))
-    #print("final: " + str((50 - 3*remaining_tiles - blocking_car_penalty - road_block_penalty)))
-    return (100 - (3*remaining_tiles) - blocking_car_penalty - road_block_penalty + block_opponent_bonus)
+    return (100 - (5*remaining_tiles) - blocking_car_penalty - road_block_penalty + block_opponent_bonus)
 
