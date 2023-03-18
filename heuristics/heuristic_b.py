@@ -34,10 +34,8 @@ def heuristic_b(player, state: State, optimize_for: Owner = None):
         opponent_row = player1_car.y
         opponent_path = range(player1_car.x + 2, player.map.player1_goal)
 
-
-    blocking_car_penalty = 0
-
     # Penalty for blocking cars
+    blocking_car_penalty = 0
     for x in path:
         car = state.car_map.get((x, car_state.y))
         if car != None:
