@@ -27,16 +27,13 @@ class IterativeDeepeningPlayerWithHistory(Player):
         self.map = map
         self.transpositions = {}
 
-        print(f"initial heuristic {self.heuristic(state)}")
         for depth_limit in range(1, DEPTH_LIMIT):
             self.depth_limit = depth_limit
             self.__max_value(state, 0, alpha=-math.inf, beta=math.inf, exclude_car="invalid", actions=[])
+        
         self.depth_limit = DEPTH_LIMIT
         v, b, move = self.__max_value(state, 0, alpha=-math.inf, beta=math.inf, exclude_car="invalid", actions=[])
-        print(f"selected move: {repr(move)} value: {v + b}")
-        print(f"final heuristic {self.heuristic(state.apply_action(move))}")
-        # self.explain_path(state)
-        # self.why_not_left(state)
+        
         return move
     
     def why_not_left(self, state:State):

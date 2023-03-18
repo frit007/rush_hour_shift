@@ -14,6 +14,7 @@ class Node:
     wins: int
     our_wins: int
     state: State
+    seconds = 30
     def __init__(self, parent: Node, children: Node, state: State) -> None:
         self.parent = parent
         self.playouts = 0
@@ -21,6 +22,7 @@ class Node:
         self.our_wins = 0
         self.children = children
         self.state = state
+        self.won_in_path = None
         
     def addChild(self, child: Node) -> None:
         self.children.append(child)
@@ -46,25 +48,30 @@ class MonteCarloPlayer(Player):
     name = "Monte Carlo Player"
     owner: Owner
     map: Map
+    seconds = 30
 
     def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history
         self.owner = state.turn
         self.map = map
         tree = Node(None, [], state)
-        return self.monte_carlo_tree_search(tree, 300)
+        return self.monte_carlo_tree_search(tree)
 
-    def monte_carlo_tree_search(self, tree: Node, seconds: int) -> Action:
+    def monte_carlo_tree_search(self, tree: Node) -> Action:
         start = time.time()
         end = time.time()
         counter = 0
-        #while end - start < seconds:
-        while counter < 1000:
+
+        while end - start < self.seconds:
             print(f"({counter}) ",end="")
             leaf = self.select(tree) 
             child = self.expand(leaf)
-            result = self.simulate(child.state)
-            self.back_propagate(result, child)
+            
+            if child.won_in_path:
+                self.back_propagate(child.won_in_path, child)
+            else:
+                result = self.simulate(child.state)
+                self.back_propagate(result, child)
             counter += 1
             end = time.time()
 
@@ -102,12 +109,15 @@ class MonteCarloPlayer(Player):
             new_state = node.state.apply_action(a)
             if new_state not in self.history:
                 child = Node(node, [], new_state)
+                child.won_in_path = node.won_in_path
+                if not child.won_in_path and new_state.get_winner(self.map) != None:
+                    child.won_in_path = new_state.get_winner(self.map)
                 node.addChild(child)
 
         node.children.sort(key=lambda c: self.heuristic(c.state, self.owner), reverse = True)
         return node.children[0]
 
-    def simulate(self, current_state: State) -> State:
+    def simulate(self, current_state: State) -> Owner:
         counter = 0
         while current_state.get_winner(self.map) == None:
             counter += 1

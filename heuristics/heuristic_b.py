@@ -2,7 +2,7 @@ from logic.state import State, Map, CarState, RoadState
 from logic.type import Owner, Direction
 
 def road_is_blocking(car_state: CarState, state: State, road:RoadState):
-    #print("Car y: " + str(car_state.y) + " Road2: " + str(road))
+    # print("Car y: " + str(car_state.y) + " Road2: " + str(road))
     if (not(car_state.y >= road.from_y() and car_state.y <= road.to_y())): 
         return True      
         
@@ -39,13 +39,13 @@ def heuristic_b(player, state: State, optimize_for: Owner = None):
 
 
     blocking_car_penalty = 0
-    #print("path " + str(path))
+    # print("path " + str(path))
     for x in path:
         #distance -= 2
-        #print("x: " + str(x)+", " + str(car_state.y))
+        # print("x: " + str(x)+", " + str(car_state.y))
         car = state.car_map.get((x, car_state.y))
         if car != None:
-            #print("FOUND CAR " + str(car.direction))
+            # print("FOUND CAR " + str(car.direction))
             if car.direction == Direction.HORIZONTAL:
                 # avoid horizontal cars on the same row
                 blocking_car_penalty += 2

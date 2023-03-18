@@ -11,6 +11,7 @@ class PoolMonteCarloPlayer(MonteCarloPlayer):
     owner: Owner
     map: Map
     max_processes: int
+    seconds = 30
 
     def __init__(self) -> None:
         super().__init__()
@@ -22,19 +23,22 @@ class PoolMonteCarloPlayer(MonteCarloPlayer):
         self.map = Map(map.map_id, map.initial_state, map.player1_goal, 
                        map.player2_goal, map.potential_roadblocks, [])
         tree = Node(None, [], state)
-        return self.monte_carlo_tree_search(tree, 60)
+        return self.monte_carlo_tree_search(tree)
 
-    def monte_carlo_tree_search(self, tree: Node, seconds: int) -> Action:
+    def monte_carlo_tree_search(self, tree: Node) -> Action:
         start = time.time()
         end = time.time()
         counter = 0
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            while end - start < seconds:
+            while end - start < self.seconds:
                 leafs = self.select_initial(tree)
                 children = list(map(self.expand, leafs))
                 children_states = map(lambda c: c.state, children)
                 for child, result in zip(children, executor.map(self.simulate, children_states)):
-                    self.back_propagate(result, child)
+                    if child.won_in_path:
+                        self.back_propagate(child.won_in_path, child)
+                    else:
+                        self.back_propagate(result, child)
                 counter += 1
                 end = time.time()
 
