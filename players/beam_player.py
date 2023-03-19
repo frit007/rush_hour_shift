@@ -46,8 +46,3 @@ class BeamPlayer(Player):
         print(queue[0][3], num_expanded)
         return queue[0][3][0]
 
-    # TODO: work on heuristic
-    # There is an updated default heuristic in player.py (we discovered some off-by-one errors) 
-    # you can overwrite it using the function below:
-    # def heuristic(self, state: State, optimize_for: Owner = None):
-    #     pass

@@ -41,7 +41,6 @@ class PoolMonteCarloPlayer(MonteCarloPlayer):
                 counter += 1
                 end = time.time()
 
-        #print(tree)
         best_child = max(tree.children, key=lambda c: c.playouts)
         return best_child.state.lead_to
 

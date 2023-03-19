@@ -20,12 +20,12 @@ Maps 1-10 were taken from the game setup descriptions at [Ultra Boardgames](http
 
 ## List of players
 
-- HumanPlayer
-- Random
-- MinimaxPlayer
-- BeamPlayer
-- IterativeDeepeningPlayer
-- IterativeDeepeningPlayerWithHistory
-- MonteCarloPlayer
-- GreedyPlayer
-- PoolMonteCarloPlayer
+- 0: HumanPlayer
+- 1: Random
+- 2: MinimaxPlayer
+- 3: BeamPlayer
+- 4: IterativeDeepeningPlayer
+- 5: IterativeDeepeningPlayerWithHistory
+- 6: MonteCarloPlayer
+- 7: GreedyPlayer
+- 8: PoolMonteCarloPlayer

@@ -1,13 +1,9 @@
-from time import sleep
-
 from logic.state import State
 from logic.type import Action
 from players.player import *
     
 class GreedyPlayer(Player):
     name = "Greedy Player"
-    # TODO: Add depth to transpositions, since it is important at which depth a state was analyzed
-    transpositions: dict[State, (float, Action, int)]
     map: Map
 
     def __init__(self) -> None:
