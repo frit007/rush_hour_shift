@@ -15,11 +15,11 @@ DEPTH_LIMIT = 5
 
 class IterativeDeepeningPlayerWithHistory(Player):
     name = "Greedy deepening"
-    # TODO: Add depth to transpositions, since it is important at which depth a state was analyzed
     transpositions: dict[State, (float, Action, int)]
     history: set[State]
     owner: Owner
     depth_limit: int
+    map: Map
 
     def play(self, state: State, map: Map, history: set[State]) -> Action:
         self.history = history

@@ -7,7 +7,6 @@ from players.player import *
 DEPTH_LIMIT = 3
 class MinimaxPlayer(Player):
     name = "MiniMax Player"
-    # TODO: Add depth to transpositions, since it is important at which depth a state was analyzed
     transpositions: dict[State, (float, Action, int)]
     history: set[State]
     owner: Owner
