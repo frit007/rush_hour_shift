@@ -35,28 +35,31 @@ def set_time_limit(algo, seconds):
     return algo
 
 
-contenders = [
-    Random(), 
-    MinimaxPlayer(), 
-    IterativeDeepeningPlayer(), 
-    IterativeDeepeningPlayerWithHistory(), 
-    BeamPlayer(),
-    GreedyPlayer(), 
-    MonteCarloPlayer(), 
-    MonteCarloPlayerProcessed(), 
-    replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), #
-    PoolMonteCarloPlayer() 
-]
+# contenders = [
+#     Random(), 
+#     MinimaxPlayer(), 
+#     IterativeDeepeningPlayer(), 
+#     IterativeDeepeningPlayerWithHistory(), 
+#     BeamPlayer(),
+#     GreedyPlayer(), 
+#     MonteCarloPlayer(), 
+#     MonteCarloPlayerProcessed(), 
+#     replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), #
+#     PoolMonteCarloPlayer(),
+# ]
 # contenders = [Random(), GreedyPlayer(),MonteCarloPlayerProcessed(),IterativeDeepeningPlayer()]
 
-# contenders = [
-#     # set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 1), 
-#     set_time_limit(MonteCarloPlayerProcessed(), 1),
-#     set_time_limit(MonteCarloPlayer(), 1),
-#     set_time_limit(PoolMonteCarloPlayer(), 1),
-#     # set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 2), 
-#     # set_time_limit(MonteCarloPlayerProcessed(), 2),
-#     ]
+contenders = [
+    # set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 1), 
+    set_time_limit(MonteCarloPlayerProcessed(), 10),
+    set_time_limit(MonteCarloPlayerProcessed(), 30),
+    set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 10),
+    set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 30),
+
+
+    # set_time_limit(replace_heuristic(MonteCarloPlayerProcessed(), heuristic_b), 2), 
+    # set_time_limit(MonteCarloPlayerProcessed(), 2),
+]
 
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
@@ -78,7 +81,7 @@ map_options, maps = map(list, zip(*load_maps()))
 map = maps[0]
 
 move_limit = 1000
-time_limit = 60*60*1 # 1 hour time limit
+time_limit = 60*60*2 # 2 hour time limit
 
 def findMatch(a, b):
     player1 = contenders[a]
@@ -110,34 +113,37 @@ def result_to_latex(results):
         for column in range(len(contenders)):
             match = findMatch(row, column)
             reverseMatch = findMatch(column, row)
-            if column >= row:
-                latex += "&" + symbol[match["result"]] + "/" + reverseSymbol[reverseMatch["result"]]
-                index += 1
-            else:
-                latex +=  "&\_"
-            # if match == None:
-            #     # Match against themselves
-            #     latex +=  "&0"
-            # else:
-            #     # latex += "&" + symbol[results[index]["result"]]
-            #     latex += "&" + symbol[match["result"]]
+            # if column > row:
+            #     latex += "&" + symbol[match["result"]] + "/" + reverseSymbol[reverseMatch["result"]]
             #     index += 1
+            # else:
+            #     latex +=  "&"
+            if match == None:
+                # Match against themselves
+                latex +=  "&\%"
+            else:
+                # latex += "&" + symbol[results[index]["result"]]
+                # latex += "&" + symbol[match["result"]]
+                latex += "&" + symbol[match["result"]] + "/" + reverseSymbol[reverseMatch["result"]]
+                    # index += 1
         latex += "\\\\\hline\n"
 
     latex += "\\end{tabular}\n\\end{center}"
     latex += "\n\n"
+    latex += "\\begin{multicols}{2}\n"
     latex += "\\begin{enumerate}\n"
     for player in contenders:
         latex += f"\t \item {player.name}\n"
     latex += "\\end{enumerate}\n"
+    latex += "\\end{multicols}\n"
     return latex
 
 
 def main():
     for player1 in contenders:
         for player2 in contenders:
-            if player1 == player2:
-                continue
+            # if player1 == player2:
+            #     continue
             players = [player1, player2]
             turn = 0
             current_state = map.initial_state
