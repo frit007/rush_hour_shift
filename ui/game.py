@@ -30,7 +30,7 @@ screen = None
 def create_window():
     global screen
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) # pygame.RESIZABLE (resolution switch?)
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     pygame.display.set_caption(NAME)
     

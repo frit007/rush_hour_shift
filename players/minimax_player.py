@@ -24,7 +24,6 @@ class MinimaxPlayer(Player):
         if state.get_winner(self.map) != None:
             return -100000000 + depth, None
         elif state in self.history and depth != 0:
-            # print("it is in history")
             return math.inf, None 
         elif depth == DEPTH_LIMIT: 
             return self.heuristic(state), None
@@ -52,7 +51,6 @@ class MinimaxPlayer(Player):
         if state.get_winner(self.map) != None:
             return 100000000 - depth, None
         elif state in self.history:
-            # print("(MIN)it is in history")
             return -math.inf, None
         elif depth == DEPTH_LIMIT: 
             return self.heuristic(state), None

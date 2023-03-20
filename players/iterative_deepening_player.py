@@ -48,7 +48,7 @@ class IterativeDeepeningPlayer(Player):
             i -= 1
             transposition = self.transpositions.get(transposition_key(state))
             if(transposition != None):
-                print(transposition[1])
+                #print(transposition[1])
                 state = state.apply_action(transposition[1])
                 path.append(state)
             else:

@@ -1,6 +1,5 @@
 from __future__ import annotations
 import time
-from logic.loader import load_maps
 
 from logic.type import Action, Owner
 from players.monte_carlo_player import *
@@ -79,8 +78,8 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
             # print("assign")
             end = time.time()
 
-        print("loops: " + str(self.job_id))
-        print(tree)
+        #print("loops: " + str(self.job_id))
+        #print(tree)
         best_child = max(tree.children, key=lambda c: c.playouts)
         return best_child.state.lead_to
 

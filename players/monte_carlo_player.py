@@ -63,7 +63,6 @@ class MonteCarloPlayer(Player):
         counter = 0
 
         while end - start < self.seconds:
-            print(f"({counter}) ",end="")
             leaf = self.select(tree) 
             child = self.expand(leaf)
             
@@ -75,8 +74,6 @@ class MonteCarloPlayer(Player):
             counter += 1
             end = time.time()
 
-        print("loops: " + str(counter))
-        print(tree)
         best_child = max(tree.children, key=lambda c: c.playouts)
         return best_child.state.lead_to
 

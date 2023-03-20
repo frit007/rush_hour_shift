@@ -77,8 +77,7 @@ class State:
         else:
             self.turn = Owner.PLAYER1
 
-    # TODO maybe there is something more efficient than copy
-    # Note: This doesn't switch whose turn it is
+    # Note: This may not switch whose turn it is
     # Return a new state, with the actions applied
     def apply_action(self, action: Action, switch_turn: bool = True):
         new_state = None
@@ -214,7 +213,6 @@ class State:
 
         return shifts
 
-    # TODO: Optimize
     def unlocked_road_states(self) -> list[RoadState]:
         unlocked = []
 
