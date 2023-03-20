@@ -23,7 +23,6 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
         tree = Node(None, [], state)
         work_queue = Queue()
         results_queue = Queue()
-        # print(f"threads {cpu_count()}")
         processes:list[Process] = []
         for i in range(cpu_count()):
             process = Process(target = monte_carlo_tree_worker, args=[self, work_queue, results_queue])
@@ -70,16 +69,12 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
         while end - start < self.seconds:
         # while self.job_id < limit:
             receiveWork()
-            # print("receive")
             while assignWork():
                 # Keep trying to assign work
                 pass
             
-            # print("assign")
             end = time.time()
 
-        #print("loops: " + str(self.job_id))
-        #print(tree)
         best_child = max(tree.children, key=lambda c: c.playouts)
         return best_child.state.lead_to
 
@@ -106,42 +101,15 @@ class MonteCarloPlayerProcessed(MonteCarloPlayer):
             counter += 1
             current_state = self.playout_policy(current_state, counter)
         return current_state.get_winner(self.map)
+    
 def monte_carlo_tree_worker(player: MonteCarloPlayerProcessed, work: Queue, results: Queue) -> Action:
-    # maps = load_maps()
-    # map = None
-    # for m in maps:
-    #     if m[1].map_id == map_id:
-    #         map = m[1]
-    #         break
-    # player = MonteCarloPlayerProcessed()
-    # player.owner = owner
-    # player.map = map
     while True:
         # job (id, tuple)
         job = work.get()
-        # print(f"job {job}" )
         if job == "stop":
             exit()
         state = job[1]
         result = player.simulate(state)
         results.put_nowait((job[0], result) )
 
-# def monte_carlo_tree_worker(owner:Owner, map_id: int, work: Queue, results: Queue) -> Action:
-#     maps = load_maps()
-#     map = None
-#     for m in maps:
-#         if m[1].map_id == map_id:
-#             map = m[1]
-#             break
-#     player = MonteCarloPlayerProcessed()
-#     player.owner = owner
-#     player.map = map
-#     while True:
-#         # job (id, tuple)
-#         job = work.get()
-#         # print(f"job {job}" )
-#         if job == "stop":
-#             exit()
-#         state = job[1]
-#         result = player.simulate(state)
-#         results.put_nowait((job[0], result) )
+

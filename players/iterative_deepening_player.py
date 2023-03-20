@@ -48,7 +48,6 @@ class IterativeDeepeningPlayer(Player):
             i -= 1
             transposition = self.transpositions.get(transposition_key(state))
             if(transposition != None):
-                #print(transposition[1])
                 state = state.apply_action(transposition[1])
                 path.append(state)
             else:
@@ -60,7 +59,6 @@ class IterativeDeepeningPlayer(Player):
 
 
     def __max_value(self, state: State, depth: int, alpha:float, beta:float,  exclude_car: Car) -> tuple[float, Action]:
-        # print(f"depth {depth}")
         if state.get_winner(self.map) != None:
             return -100000000 + depth, None
         elif state in self.history and depth != 0:

@@ -43,6 +43,5 @@ class BeamPlayer(Player):
             if queue[0][2].get_winner(self.map) == self.owner:
                 return queue[0][3][0]
 
-        # print(queue[0][3], num_expanded)
         return queue[0][3][0]
 
